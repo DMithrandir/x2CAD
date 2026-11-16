@@ -1,0 +1,47 @@
+{
+  "operator": "curve_interpolation",
+  "cases": [
+    {
+      "case_id": "curve_interpolation.uniform_params_five_points",
+      "module": "operators.curve_interpolation.impl",
+      "function": "uniform_params",
+      "args": [4],
+      "checks": [{"kind": "exact", "expected": [0.0, 0.25, 0.5, 0.75, 1.0]}],
+      "tags": ["analytic"]
+    },
+    {
+      "case_id": "curve_interpolation.chordal_params_345_triangle",
+      "module": "operators.curve_interpolation.impl",
+      "function": "chordal_params",
+      "args": [[[0.0, 0.0], [3.0, 4.0], [3.0, 8.0]]],
+      "checks": [
+        {"kind": "close", "expected": [0.0, 0.5555555555555556, 1.0], "rel_tol": 1e-12}
+      ],
+      "tags": ["analytic", "parameterization"]
+    },
+    {
+      "case_id": "curve_interpolation.averaged_knots_de_boor",
+      "module": "operators.curve_interpolation.impl",
+      "function": "averaged_knots",
+      "args": [[0.0, 0.25, 0.5, 0.75, 1.0], 2],
+      "checks": [{"kind": "exact", "expected": [0.0, 0.0, 0.0, 0.375, 0.625, 1.0, 1.0, 1.0]}],
+      "tags": ["analytic", "knots"]
+    },
+    {
+      "case_id": "curve_interpolation.duplicate_points_raise",
+      "module": "operators.curve_interpolation.impl",
+      "function": "chordal_params",
+      "args": [[[0.0, 0.0], [0.0, 0.0], [1.0, 0.0]]],
+      "checks": [{"kind": "raises", "exception": "DomainError", "match": "重复数据点"}],
+      "tags": ["degeneracy", "S-family"]
+    },
+    {
+      "case_id": "curve_interpolation.non_increasing_params_raise",
+      "module": "operators.curve_interpolation.impl",
+      "function": "averaged_knots",
+      "args": [[0.0, 0.5, 0.5, 1.0], 2],
+      "checks": [{"kind": "raises", "exception": "DomainError", "match": "递增"}],
+      "tags": ["degeneracy", "N-family"]
+    }
+  ]
+}

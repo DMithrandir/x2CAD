@@ -1,0 +1,66 @@
+{
+  "operator": "degree_elevation",
+  "cases": [
+    {
+      "case_id": "degree_elevation.quadratic_to_cubic_hand_example",
+      "module": "operators.degree_elevation.impl",
+      "function": "elevate_bezier",
+      "args": [[[0.0, 0.0], [1.0, 1.0], [2.0, 0.0]]],
+      "checks": [
+        {
+          "kind": "close",
+          "expected": [
+            [0.0, 0.0],
+            [0.6666666666666666, 0.6666666666666666],
+            [1.3333333333333333, 0.6666666666666666],
+            [2.0, 0.0]
+          ],
+          "rel_tol": 1e-12
+        }
+      ],
+      "tags": ["analytic", "bezier"]
+    },
+    {
+      "case_id": "degree_elevation.downgrade_request_raises",
+      "module": "operators.degree_elevation.impl",
+      "function": "elevate_bezier_to",
+      "args": [[[0.0, 0.0], [1.0, 1.0], [2.0, 0.0]], 1],
+      "checks": [{"kind": "raises", "exception": "DomainError", "match": "目标次数"}],
+      "tags": ["degeneracy", "N-family"]
+    },
+    {
+      "case_id": "degree_elevation.nurbs_quarter_circle_to_cubic",
+      "module": "operators.degree_elevation.impl",
+      "function": "elevate_bezier_nurbs",
+      "args": [
+        [[1.0, 0.0], [1.0, 1.0], [0.0, 1.0]],
+        [1.0, 0.7071067811865476, 1.0],
+        3
+      ],
+      "checks": [
+        {
+          "kind": "close",
+          "expected": [
+            [
+              [1.0, 0.0],
+              [1.0, 0.5857864376269051],
+              [0.5857864376269051, 1.0],
+              [0.0, 1.0]
+            ],
+            [1.0, 0.804737854124365, 0.804737854124365, 1.0]
+          ],
+          "rel_tol": 1e-12
+        }
+      ],
+      "tags": ["analytic", "nurbs"]
+    },
+    {
+      "case_id": "degree_elevation.single_point_raises",
+      "module": "operators.degree_elevation.impl",
+      "function": "elevate_bezier",
+      "args": [[[0.0, 0.0]]],
+      "checks": [{"kind": "raises", "exception": "DomainError", "match": "2 个控制点"}],
+      "tags": ["degeneracy", "S-family"]
+    }
+  ]
+}

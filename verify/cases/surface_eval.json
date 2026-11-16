@@ -1,0 +1,82 @@
+{
+  "operator": "surface_eval",
+  "cases": [
+    {
+      "case_id": "surface_eval.bilinear.center_point",
+      "module": "operators.surface_eval.impl",
+      "function": "surface_point",
+      "args": [
+        [0.0, 0.0, 1.0, 1.0],
+        [0.0, 0.0, 1.0, 1.0],
+        1,
+        1,
+        [[[0.0, 0.0, 0.0], [0.0, 1.0, 0.0]], [[1.0, 0.0, 0.0], [1.0, 1.0, 1.0]]],
+        0.5,
+        0.5
+      ],
+      "checks": [{"kind": "close", "expected": [0.5, 0.5, 0.25], "rel_tol": 1e-12}],
+      "tags": ["analytic", "bilinear"]
+    },
+    {
+      "case_id": "surface_eval.bilinear.corner_point",
+      "module": "operators.surface_eval.impl",
+      "function": "surface_point",
+      "args": [
+        [0.0, 0.0, 1.0, 1.0],
+        [0.0, 0.0, 1.0, 1.0],
+        1,
+        1,
+        [[[0.0, 0.0, 0.0], [0.0, 1.0, 0.0]], [[1.0, 0.0, 0.0], [1.0, 1.0, 1.0]]],
+        0.0,
+        1.0
+      ],
+      "checks": [{"kind": "exact", "expected": [0.0, 1.0, 0.0]}],
+      "tags": ["invariant", "corner"]
+    },
+    {
+      "case_id": "surface_eval.bilinear.partial_derivatives",
+      "module": "operators.surface_eval.impl",
+      "function": "surface_derivatives",
+      "args": [
+        [0.0, 0.0, 1.0, 1.0],
+        [0.0, 0.0, 1.0, 1.0],
+        1,
+        1,
+        [[[0.0, 0.0, 0.0], [0.0, 1.0, 0.0]], [[1.0, 0.0, 0.0], [1.0, 1.0, 1.0]]],
+        0.5,
+        0.5,
+        1,
+        1
+      ],
+      "checks": [
+        {
+          "kind": "close",
+          "expected": [
+            [[0.5, 0.5, 0.25], [0.0, 1.0, 0.5]],
+            [[1.0, 0.0, 0.5], [0.0, 0.0, 1.0]]
+          ],
+          "rel_tol": 1e-12
+        }
+      ],
+      "tags": ["analytic", "derivative"]
+    },
+    {
+      "case_id": "surface_eval.du_out_of_range_raises",
+      "module": "operators.surface_eval.impl",
+      "function": "surface_derivatives",
+      "args": [
+        [0.0, 0.0, 1.0, 1.0],
+        [0.0, 0.0, 1.0, 1.0],
+        1,
+        1,
+        [[[0.0, 0.0, 0.0], [0.0, 1.0, 0.0]], [[1.0, 0.0, 0.0], [1.0, 1.0, 1.0]]],
+        0.5,
+        0.5,
+        2,
+        0
+      ],
+      "checks": [{"kind": "raises", "exception": "DomainError", "match": "du"}],
+      "tags": ["degeneracy", "domain"]
+    }
+  ]
+}

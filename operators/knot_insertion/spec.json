@@ -1,0 +1,38 @@
+{
+  "slug": "knot_insertion",
+  "name": "Boehm 节点插入（单次/重复）与 NURBS 节点插入",
+  "category": "curve",
+  "dim": "any",
+  "version": "0.1.0",
+  "source": "Piegl & Tiller, The NURBS Book 2nd ed., A5.1（单次插入）；重复插入 = r 次 A5.1；NURBS = 齐次坐标下插入后投影",
+  "signature": {
+    "inputs": {
+      "U": "knots: list[float], clamped",
+      "p": "degree: int >= 1",
+      "ctrl": "list of points（任意同维；NURBS 入口为仿射控制点）",
+      "weights": "list[float] > 0（仅 NURBS 入口）",
+      "u": "插入参数，u ∈ [U[p], U[n+1]]",
+      "r": "int >= 0，插入个数，须满足 r + multiplicity(u) <= p"
+    },
+    "outputs": ["U_new: list[float]", "ctrl_new: list[tuple]", "weights_new: list[float]（NURBS）"]
+  },
+  "preconditions": [
+    "validate_knot_vector：非降、端重数恰 p+1、内部重数 ≤ p",
+    "u 有限且在参数域内",
+    "r 为非负整数；r + s <= p（s 为 u 的现有重数）",
+    "NURBS 权重全为正的有限数"
+  ],
+  "invariants": [
+    "几何不变：插入前后曲线在参数域内逐点相同（相对误差 <= 1e-12，测试用 25 个采样参数）",
+    "节点数 = len(U) + r，控制点数 = n+1+r",
+    "u 的重数恰好增加 r",
+    "重复插入 r 次到重数 p 后仍为同一曲线（C^0 分割前的极限形态）"
+  ],
+  "degeneracy_branches": [
+    {"family": "S", "trigger": "r + s > p（重数超过次数）", "action": "FAIL: DomainError（拒绝产生 C^{-1} 曲线）"},
+    {"family": "N", "trigger": "插入公式分母 U[i+p]-U[i] <= 0", "action": "FAIL: DomainError（输入违反插入前提）"},
+    {"family": "N", "trigger": "u 恰为端点（s = p+1）", "action": "FAIL: DomainError（r+s > p 自动触发）"}
+  ],
+  "oracle_tests": "tests/test_knot_ops.py（几何不变性、p=1 解析反例、重数与长度不变量、NURBS 圆不变量、退化拒绝）",
+  "depends_on": []
+}

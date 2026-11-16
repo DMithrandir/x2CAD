@@ -1,0 +1,36 @@
+{
+  "slug": "curve_eval",
+  "name": "B 样条 / NURBS 曲线求值与各阶导数",
+  "category": "curve",
+  "dim": "any",
+  "version": "0.1.0",
+  "source": "Piegl & Tiller, The NURBS Book 2nd ed., 式 2.5/2.6/2.7, A2.1-A2.3, A3.2-A3.4, A4.4",
+  "signature": {
+    "inputs": {
+      "U": "knots: list[float], len = n+p+2, clamped",
+      "p": "degree: int >= 1",
+      "ctrl": "list of points (tuple, 任意维，同维)",
+      "weights": "list[float] > 0（仅 NURBS 入口）",
+      "u": "float in [U[p], U[n+1]]",
+      "n_ders": "int in [0, p]"
+    },
+    "outputs": ["point: tuple", "derivatives: list[tuple] (k = 0..n_ders)"]
+  },
+  "preconditions": [
+    "validate_knot_vector: 非降、端重数恰 p+1、内部重数 ≤ p、至少一个非退化区间",
+    "控制点同维且非空；权重数为 n+1 且全正（NURBS）",
+    "方法 B（差分链）额外要求内部重数 ≤ p - n_ders"
+  ],
+  "invariants": [
+    "单位分解推论：常数控制点 → 常数曲线，1..p 阶导为零",
+    "线性精度：Greville 配置的控制点精确重现线性函数",
+    "NURBS 圆：|C(u)| = 1（5e-12），C·C' = 0（1e-8）",
+    "方法 A 与方法 B 在光滑域内逐点一致（2e-8 相对）"
+  ],
+  "degeneracy_branches": [
+    {"family": "S", "trigger": "内部重数 s 的节点处求 > p-s 阶导", "action": "EXACT(右向单侧值, 方法 A) / DomainError(方法 B)"},
+    {"family": "N", "trigger": "w(u) 下溢为零", "action": "FAIL: DomainError"},
+    {"family": "N", "trigger": "零分母递推项", "action": "按 NURBS Book 惯例置零（配对基恒为零时成立）"}
+  ],
+  "oracle_tests": "tests/test_curve.py, tests/test_rational.py（Bézier 闭式、端点差分闭式、FD、双实现对拍、圆不变量）"
+}

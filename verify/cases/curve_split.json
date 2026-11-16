@@ -1,0 +1,39 @@
+{
+  "operator": "curve_split",
+  "cases": [
+    {
+      "case_id": "curve_split.p1_hand_example",
+      "module": "operators.curve_split.impl",
+      "function": "split_curve",
+      "args": [[0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 4.0], 1, [[0.0], [1.0], [2.0], [3.0], [4.0]], 1.5],
+      "checks": [
+        {
+          "kind": "close",
+          "expected": [
+            [[0.0, 0.0, 1.0, 1.5, 1.5], [[0.0], [1.0], [1.5]]],
+            [[1.5, 1.5, 2.0, 3.0, 4.0, 4.0], [[1.5], [2.0], [3.0], [4.0]]]
+          ],
+          "rel_tol": 1e-15,
+          "abs_tol": 1e-15
+        }
+      ],
+      "tags": ["analytic", "regression"]
+    },
+    {
+      "case_id": "curve_split.endpoint_raises",
+      "module": "operators.curve_split.impl",
+      "function": "split_curve",
+      "args": [[0.0, 0.0, 0.0, 1.0, 1.0, 1.0], 2, [[0.0, 0.0], [1.0, 1.0], [2.0, 0.0]], 1.0],
+      "checks": [{"kind": "raises", "exception": "DomainError", "match": "端点"}],
+      "tags": ["degeneracy", "S-family"]
+    },
+    {
+      "case_id": "curve_split.outside_domain_raises",
+      "module": "operators.curve_split.impl",
+      "function": "split_curve",
+      "args": [[0.0, 0.0, 0.0, 1.0, 1.0, 1.0], 2, [[0.0, 0.0], [1.0, 1.0], [2.0, 0.0]], 1.5],
+      "checks": [{"kind": "raises", "exception": "DomainError"}],
+      "tags": ["degeneracy", "N-family"]
+    }
+  ]
+}

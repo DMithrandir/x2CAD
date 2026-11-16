@@ -1,0 +1,70 @@
+{
+  "operator": "curve_geometry",
+  "cases": [
+    {
+      "case_id": "curve_geometry.line_length",
+      "module": "operators.curve_geometry.impl",
+      "function": "arc_length",
+      "args": [[0.0, 0.0, 0.0, 1.0, 1.0, 1.0], 2, [[0.0, 0.0], [1.0, 0.0], [2.0, 0.0]]],
+      "checks": [{"kind": "close", "expected": 2.0, "rel_tol": 1e-12}],
+      "tags": ["analytic"]
+    },
+    {
+      "case_id": "curve_geometry.quarter_circle_length",
+      "module": "operators.curve_geometry.impl",
+      "function": "nurbs_arc_length",
+      "args": [
+        [0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        2,
+        [[1.0, 0.0], [1.0, 1.0], [0.0, 1.0]],
+        [1.0, 0.7071067811865476, 1.0]
+      ],
+      "checks": [{"kind": "close", "expected": 1.5707963267948966, "rel_tol": 1e-12}],
+      "tags": ["analytic", "circle-invariant"]
+    },
+    {
+      "case_id": "curve_geometry.parabola_vertex_curvature",
+      "module": "operators.curve_geometry.impl",
+      "function": "curvature",
+      "args": [[0.0, 0.0, 0.0, 1.0, 1.0, 1.0], 2, [[-1.0, 1.0], [0.0, -1.0], [1.0, 1.0]], 0.5],
+      "checks": [{"kind": "close", "expected": 2.0, "rel_tol": 1e-12}],
+      "tags": ["analytic"]
+    },
+    {
+      "case_id": "curve_geometry.circle_curvature_nurbs",
+      "module": "operators.curve_geometry.impl",
+      "function": "nurbs_curvature",
+      "args": [
+        [0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        2,
+        [[1.0, 0.0], [1.0, 1.0], [0.0, 1.0]],
+        [1.0, 0.7071067811865476, 1.0],
+        0.25
+      ],
+      "checks": [{"kind": "close", "expected": 1.0, "rel_tol": 1e-10}],
+      "tags": ["analytic", "circle-invariant"]
+    },
+    {
+      "case_id": "curve_geometry.circle_tangent_at_start",
+      "module": "operators.curve_geometry.impl",
+      "function": "nurbs_unit_tangent",
+      "args": [
+        [0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        2,
+        [[1.0, 0.0], [1.0, 1.0], [0.0, 1.0]],
+        [1.0, 0.7071067811865476, 1.0],
+        0.0
+      ],
+      "checks": [{"kind": "close", "expected": [0.0, 1.0], "abs_tol": 1e-12}],
+      "tags": ["analytic"]
+    },
+    {
+      "case_id": "curve_geometry.curvature_requires_second_derivative",
+      "module": "operators.curve_geometry.impl",
+      "function": "curvature",
+      "args": [[0.0, 0.0, 1.0, 1.0], 1, [[0.0, 0.0], [1.0, 0.0]], 0.5],
+      "checks": [{"kind": "raises", "exception": "DomainError", "match": "二阶导"}],
+      "tags": ["degeneracy", "N-family"]
+    }
+  ]
+}

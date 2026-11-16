@@ -1,0 +1,39 @@
+{
+  "slug": "curve_split",
+  "name": "曲线分割：在参数 u 处把 B 样条 / NURBS 曲线分成两段",
+  "category": "curve",
+  "dim": "any",
+  "version": "0.1.0",
+  "source": "Piegl & Tiller, The NURBS Book 2nd ed., A5.1（插入到重数 p）+ 控制点序列在共享端点处分组",
+  "signature": {
+    "inputs": {
+      "U": "knots: list[float], clamped",
+      "p": "degree: int >= 1",
+      "ctrl": "list of points（任意同维）",
+      "weights": "list[float] > 0（仅 NURBS 入口）",
+      "u": "分割参数，必须严格位于开区间 (U[p], U[n+1]) 内"
+    },
+    "outputs": [
+      "left: (U_left, P_left) 参数域 [U[p], u]",
+      "right: (U_right, P_right) 参数域 [u, U[n+1]]"
+    ]
+  },
+  "preconditions": [
+    "validate_knot_vector 通过",
+    "U[p] < u < U[n+1]（端点分割无几何意义）",
+    "NURBS 权重全为正的有限数"
+  ],
+  "invariants": [
+    "两段各自在参数域上与原子曲线逐点一致（1e-12）",
+    "共享端点控制点严格相同，且等于 C(u)",
+    "两段节点向量都是合法 clamped 向量（后置 validate_knot_vector）",
+    "NURBS 分割后两段仍在单位圆上（四分之一圆测试）"
+  ],
+  "degeneracy_branches": [
+    {"family": "S", "trigger": "u 恰为参数域端点", "action": "FAIL: DomainError（拒绝空段）"},
+    {"family": "N", "trigger": "u 在参数域外 / NaN / Inf", "action": "FAIL: DomainError"},
+    {"family": "S", "trigger": "u 处重数已达 p", "action": "EXACT：无需插入，直接按块分组"}
+  ],
+  "oracle_tests": "tests/test_knot_ops.py（逐段几何对拍、共享端点、已有节点处分段、NURBS 圆不变量）",
+  "depends_on": ["knot_insertion"]
+}

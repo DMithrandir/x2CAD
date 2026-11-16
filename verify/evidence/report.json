@@ -1,0 +1,53 @@
+{
+  "generated_at": "2026-11-16T15:24:37+00:00",
+  "root": "C:\\Users\\desha\\Desktop\\CAD",
+  "static": {
+    "findings": 0,
+    "details": []
+  },
+  "coverage": {
+    "missing_operators": []
+  },
+  "conformance": {
+    "cases": 39,
+    "cases_passed": 39,
+    "checks": 39,
+    "checks_passed": 39,
+    "checks_failed": 0,
+    "by_operator": {
+      "curve_eval": {
+        "checks": 8,
+        "failed": 0
+      },
+      "curve_geometry": {
+        "checks": 6,
+        "failed": 0
+      },
+      "curve_interpolation": {
+        "checks": 5,
+        "failed": 0
+      },
+      "curve_split": {
+        "checks": 3,
+        "failed": 0
+      },
+      "degree_elevation": {
+        "checks": 4,
+        "failed": 0
+      },
+      "fillet_2d": {
+        "checks": 4,
+        "failed": 0
+      },
+      "knot_insertion": {
+        "checks": 5,
+        "failed": 0
+      },
+      "surface_eval": {
+        "checks": 4,
+        "failed": 0
+      }
+    }
+  },
+  "failures": []
+}

@@ -1,0 +1,39 @@
+{
+  "slug": "fillet_2d",
+  "name": "二维圆角：两线段夹角处的相切圆弧",
+  "category": "blend",
+  "dim": "2D",
+  "version": "0.1.0",
+  "source": "经典平面几何：角平分线 + 相切条件 d=r/sin(θ/2)、t=r/tan(θ/2)；圆弧圆心角 π−θ（四边形 p2-T1-C-T2 的直角关系）",
+  "signature": {
+    "inputs": {
+      "p1,p2,p3": "三个二维点；p2 为角点（p1-p2 与 p3-p2 为两条边）",
+      "radius": "float > 0，圆角半径"
+    },
+    "outputs": [
+      "Fillet2D(center, tangent1, tangent2, radius, start_angle, sweep, corner, angle)",
+      "length = r·|sweep|；point(s) 给出圆弧上的参数点"
+    ]
+  },
+  "preconditions": [
+    "三个点都是有限的二维点",
+    "两条边长度均非零",
+    "两边不共线（夹角 θ ∈ (0, π)）",
+    "切点距离 t = r/tan(θ/2) 不超过任一边长（半径不能大到切点跑到延长线上）"
+  ],
+  "invariants": [
+    "|C−T1| = |C−T2| = r",
+    "半径向量与对应边方向正交（相切）",
+    "圆心到两条边所在直线的距离 = r",
+    "弧长 = r(π−θ)；point(0)=T1，point(1)=T2",
+    "圆弧中点到角点的距离 = r/sin(θ/2) − r"
+  ],
+  "degeneracy_branches": [
+    {"family": "N", "trigger": "radius <= 0 或非有限", "action": "FAIL: DomainError"},
+    {"family": "N", "trigger": "边长为零（p1 或 p3 与角点重合）", "action": "FAIL: DomainError"},
+    {"family": "C", "trigger": "两边共线（θ=0 或 π）", "action": "FAIL: DomainError（无夹角）"},
+    {"family": "S", "trigger": "切点超出线段（r 过大）", "action": "FAIL: DomainError（不把切点放到延长线上）"}
+  ],
+  "oracle_tests": "tests/test_fillet.py（直角手算例、相切性/等距性、弧长与中点解析式、过大半径与共线拒绝）",
+  "depends_on": []
+}

@@ -1,0 +1,178 @@
+{
+  "version": "0.1.0",
+  "updated": "2026-11-09",
+  "families": {
+    "T": "相切 / 一阶接触",
+    "C": "共面 / 重合",
+    "S": "sliver / 退化单元",
+    "I": "自交 / 非流形",
+    "N": "数值抵消 / 条件数"
+  },
+  "entries": [
+    {
+      "id": "T-001",
+      "family": "T",
+      "title": "圆弧/曲面在切点附近曲率条件数爆炸",
+      "triggers": ["tangent", "tangency", "osculat", "first-order contact", "kissing"],
+      "scenario": "两段圆弧在一点相切：交点唯一但法向相同，用离散差分估计曲率或法向时，切点邻域内两点几乎重合，除法放大舍入误差。",
+      "remediation": "曲率走解析导数（基函数二阶导），不用有限差分；把相切点作为单独退化点处理，不从差分推断切向。",
+      "test": "tests/test_curve_geometry.py::test_circle_curvature_is_one",
+      "operators": ["curve_geometry"],
+      "tags": ["curve", "analytic-oracle"]
+    },
+    {
+      "id": "T-002",
+      "family": "T",
+      "title": "近共线夹角处倒圆角：切点距离 t=r/tan(θ/2) 发散",
+      "triggers": ["nearly collinear", "small angle", "fillet", "tangent distance"],
+      "scenario": "两边夹角趋近 0 或 π 时，圆角切点距离 t=r/tan(θ/2) 趋于无穷，切点跑到线段延长线上；θ 恰好为 0/π 时圆角根本不存在。",
+      "remediation": "显式拒绝共线（cross(u,v)=0）；切点距离超过边长即 DomainError，绝不把切点放到延长线上假装成功。",
+      "test": "tests/test_fillet.py::test_collinear_edges_are_rejected",
+      "operators": ["fillet_2d"],
+      "tags": ["2d", "blend"]
+    },
+    {
+      "id": "T-003",
+      "family": "T",
+      "title": "重节点造成的尖点：|C'|=0，切矢/曲率无定义",
+      "triggers": ["cusp", "zero speed", "repeated knot", "singularity"],
+      "scenario": "内部重数接近 p 或控制点重合时，曲线在节点处速度为零；切矢 = C'/|C'| 变成 0/0。",
+      "remediation": "切矢与曲率入口检查 |C'|>0，否则 DomainError；不返回零向量假装成功。",
+      "test": "tests/test_curve_geometry.py::test_singular_speed_is_rejected",
+      "operators": ["curve_geometry"],
+      "tags": ["curve", "singularity"]
+    },
+    {
+      "id": "C-001",
+      "family": "C",
+      "title": "四点共面：orient3d 必须精确返回 0，而不是 1e-17",
+      "triggers": ["coplanar", "coincident", "orientation", "zero determinant"],
+      "scenario": "布尔/求交的分支依赖 orient3d 的符号；共面时浮点行列式是 1e-17 量级的噪声，符号随机，导致同一输入两次运行走不同分支。",
+      "remediation": "精确谓词（浮点滤波 + 有理数回退）；共面返回 0，由调用方按显式规则决断，不靠符号猜测。",
+      "test": "tests/test_predicates.py::test_orient3d_coplanar_is_zero",
+      "operators": ["predicates"],
+      "tags": ["predicate", "robustness"]
+    },
+    {
+      "id": "C-002",
+      "family": "C",
+      "title": "共线三点构成零面积三角形",
+      "triggers": ["collinear", "zero area", "degenerate triangle", "sliver"],
+      "scenario": "三角剖分中出现共线三点：面积恰好为零，法向未定义，后续体积/质量属性全部污染。",
+      "remediation": "用相对判据（2·面积 ≤ rel_tol·最长边²）计数退化三角形；修复走 collapse/split（P2 拓扑阶段）。",
+      "test": "tests/test_verify_core.py::test_degenerate_triangle_detection",
+      "operators": ["invariants"],
+      "tags": ["mesh", "tier1"]
+    },
+    {
+      "id": "C-003",
+      "family": "C",
+      "title": "两边共线时倒圆角",
+      "triggers": ["collinear edges", "fillet", "zero angle", "straight corner"],
+      "scenario": "选中两条共线边倒圆角：没有夹角，角平分线退化，任何半径都不存在相切圆弧。",
+      "remediation": "cross(u,v)=0 时 DomainError；提示用户选择真正相邻的两条边（引用层应解析到共享顶点的边）。",
+      "test": "tests/test_fillet.py::test_collinear_edges_are_rejected",
+      "operators": ["fillet_2d"],
+      "tags": ["2d", "blend"]
+    },
+    {
+      "id": "S-001",
+      "family": "S",
+      "title": "重复数据点导致参数化长度为 0",
+      "triggers": ["duplicate points", "zero chord", "parameterization", "sliver segment"],
+      "scenario": "弦长/向心参数化遇到相邻重复点：该段长度为 0，归一化参数出现 0/0 或非递增。",
+      "remediation": "显式 DomainError，要求调用方去重或提供显式参数；不静默扰动坐标。",
+      "test": "tests/test_interpolation.py::test_parameterization_properties",
+      "operators": ["curve_interpolation"],
+      "tags": ["curve", "parameterization"]
+    },
+    {
+      "id": "S-002",
+      "family": "S",
+      "title": "近零面积三角形（sliver）用绝对阈值判断",
+      "triggers": ["sliver", "near-zero area", "ill-conditioned triangle"],
+      "scenario": "用绝对阈值（如 area<1e-12）筛退化单元：在 1e-3 尺度的零件上误杀正常三角形，在 1e6 尺度上放过真正的 sliver。",
+      "remediation": "判据相对化：面积相对最长边平方；与全局尺度无关。",
+      "test": "tests/test_verify_core.py::test_degenerate_triangle_detection",
+      "operators": ["invariants"],
+      "tags": ["mesh", "scaling"]
+    },
+    {
+      "id": "S-003",
+      "family": "S",
+      "title": "内部重数 s 处求 > p−s 阶导数",
+      "triggers": ["multiplicity", "continuity", "smoothness", "higher derivative"],
+      "scenario": "曲线在内部节点的重数为 s，C^{p-s-1} 连续；求第 p-s+1 阶导时该点导数不存在。基函数导数递推仍能返回一个数（单侧值），容易被误当作真实导数。",
+      "remediation": "方法 B 在光滑性不足时 DomainError；方法 A 显式声明返回右向单侧值（HITL 已裁决的语义）。",
+      "test": "tests/test_curve.py::test_differencing_smoothness_precondition",
+      "operators": ["curve_eval"],
+      "tags": ["curve", "continuity"]
+    },
+    {
+      "id": "I-001",
+      "family": "I",
+      "title": "网格缺面：不是闭合实体",
+      "triggers": ["open mesh", "boundary edge", "watertight", "hole"],
+      "scenario": "面片集合缺一个面：边界边只被一个面使用，体积/水密性检查失去意义，导出 STL 后是破壳。",
+      "remediation": "Tier 1 闭合性检查（每条无向边恰好 2 次使用）；缺面即报告边界边列表。",
+      "test": "tests/test_verify_core.py::test_closed_manifold_detects_missing_face",
+      "operators": ["invariants"],
+      "tags": ["mesh", "tier1"]
+    },
+    {
+      "id": "I-002",
+      "family": "I",
+      "title": "面片翻转：法向不一致",
+      "triggers": ["flipped face", "inconsistent orientation", "winding"],
+      "scenario": "相邻两面共享边的方向相同：一片法向朝内一片朝外，体积相消为 0。",
+      "remediation": "Tier 1 定向检查（共享边的两次使用方向必须相反）；报告问题面。",
+      "test": "tests/test_verify_core.py::test_closed_manifold_detects_inconsistent_orientation",
+      "operators": ["invariants"],
+      "tags": ["mesh", "tier1"]
+    },
+    {
+      "id": "I-003",
+      "family": "I",
+      "title": "非流形边：一条边被 3 个面共享",
+      "triggers": ["non-manifold", "three faces", "t-junction"],
+      "scenario": "布尔或修复产生 T 型连接：一条边被 3 个面使用，实体不再是 2-流形，后续布尔/倒角语义未定义。",
+      "remediation": "非流形显式降级或拒绝；修复走 split/duplicate 边（P2 拓扑阶段，人工审查）。",
+      "test": "tests/test_degeneracy_cases.py::test_non_manifold_edge_detected",
+      "operators": ["invariants"],
+      "tags": ["mesh", "topology"]
+    },
+    {
+      "id": "N-001",
+      "family": "N",
+      "title": "浮点滤波漏判：定向谓词符号翻转",
+      "triggers": ["cancellation", "floating point", "near-degenerate", "sign flip"],
+      "scenario": "坐标尺度差异巨大时，orient2d 的两个乘积舍入成同一个浮点数，行列式恰好为 0；精确符号其实非零。拓扑分支因此走错。",
+      "remediation": "浮点滤波 + 有理数精确回退；慢路径只在误差界内触发，热路径开销可控。",
+      "test": "tests/test_predicates.py::test_orient2d_float_filter_failure_is_caught",
+      "operators": ["predicates"],
+      "tags": ["predicate", "robustness"]
+    },
+    {
+      "id": "N-002",
+      "family": "N",
+      "title": "近零速度的被积函数：固定面板求积收敛意外地慢",
+      "triggers": ["arc length", "near-zero speed", "quadrature", "complex singularity"],
+      "scenario": "|C'| = sqrt(二次式) 的极小值接近 0 时，被积函数在实轴附近有复奇点；固定 8 点 Gauss 面板只给到 1e-5 相对精度，且增加面板数收敛也不快。",
+      "remediation": "自适应二分求积（比较整段与两半的估计），把误差压到声明容差；断点取节点向量，跨节点处分段。",
+      "test": "tests/test_degeneracy_cases.py::test_adaptive_quadrature_beats_fixed_panels",
+      "operators": ["curve_geometry", "quadrature"],
+      "tags": ["numerics", "quadrature"]
+    },
+    {
+      "id": "N-003",
+      "family": "N",
+      "title": "NURBS 权重非正 / 齐次分母下溢",
+      "triggers": ["weights", "homogeneous", "underflow", "negative weight"],
+      "scenario": "权重为负或零时有理曲线不再是凸组合，投影可能穿过无穷远；w(u) 下溢为零时投影直接变成除零。",
+      "remediation": "入口校验权重全正且有限；求值时 |w(u)| 低于阈值即 DomainError。",
+      "test": "tests/test_rational.py::test_weight_validation",
+      "operators": ["curve_eval"],
+      "tags": ["nurbs", "degeneracy"]
+    }
+  ]
+}

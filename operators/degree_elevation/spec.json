@@ -1,0 +1,37 @@
+{
+  "slug": "degree_elevation",
+  "name": "Bézier 曲线升阶（单步与重复升阶，含 NURBS）",
+  "category": "curve",
+  "dim": "any",
+  "version": "0.1.0",
+  "source": "Piegl & Tiller, The NURBS Book 2nd ed., A5.9（Bézier 升阶）；重复升阶 = 迭代；NURBS = 齐次升阶后投影",
+  "signature": {
+    "inputs": {
+      "ctrl": "list of points（单段 Bézier，长度 p+1 >= 2，同维）",
+      "weights": "list[float] > 0（仅 NURBS 入口，长度 = 控制点数）",
+      "target_degree": "int >= 当前次数"
+    },
+    "outputs": ["ctrl_elevated: list[tuple]", "weights_elevated: list[float]（NURBS）"]
+  },
+  "preconditions": [
+    "控制点数量 >= 2 且同维非零维",
+    "target_degree >= 当前次数 p = len(ctrl)-1",
+    "NURBS 权重全为正的有限数"
+  ],
+  "invariants": [
+    "几何不变：升阶前后 Bézier 曲线逐点相同（1e-12）",
+    "端点控制点严格保持",
+    "控制点数 = 目标次数 + 1",
+    "NURBS 升阶后仍精确表示同一有理曲线（四分之一圆测试）"
+  ],
+  "degeneracy_branches": [
+    {"family": "N", "trigger": "控制点少于 2 个（零次/空曲线）", "action": "FAIL: DomainError"},
+    {"family": "N", "trigger": "target_degree < p（降阶请求）", "action": "FAIL: DomainError（降阶不是升阶的逆，需单独算子）"},
+    {"family": "N", "trigger": "NURBS 权重非正/非有限", "action": "FAIL: DomainError"}
+  ],
+  "unhandled": [
+    "一般 B 样条（带内部节点）的升阶：需先分割为 Bézier 段再合并节点向量，属拓扑装配操作（ADR-0001），列为 P4 规格先行项"
+  ],
+  "oracle_tests": "tests/test_knot_ops.py（Bernstein 逐点对拍、手算升阶例、端点保持、NURBS 圆不变量）",
+  "depends_on": []
+}

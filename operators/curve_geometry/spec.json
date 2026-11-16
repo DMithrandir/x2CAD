@@ -1,0 +1,40 @@
+{
+  "slug": "curve_geometry",
+  "name": "曲线微分几何量：弧长、单位切矢、曲率（B 样条 + NURBS）",
+  "category": "measure",
+  "dim": "any",
+  "version": "0.1.0",
+  "source": "Piegl & Tiller, The NURBS Book 2nd ed., 式 4.7/4.8（导数）+ 经典微分几何 κ=|C'×C''|/|C'|³；弧长用 Gauss–Legendre 求积",
+  "signature": {
+    "inputs": {
+      "U": "knots: list[float], clamped",
+      "p": "degree: int >= 1（曲率要求 >= 2）",
+      "ctrl": "list of points（2D 或 3D，同维）",
+      "weights": "list[float] > 0（仅 NURBS 弧长入口）",
+      "u0,u1": "积分端点，默认整条曲线；须满足 u0 < u1",
+      "rel_tol": "自适应求积的相对容差（默认 1e-12）",
+      "max_depth": "自适应二分的最大深度（默认 24）"
+    },
+    "outputs": ["length: float", "T: tuple", "kappa: float"]
+  },
+  "preconditions": [
+    "validate_knot_vector 通过；控制点 2D/3D 同维",
+    "曲率要求 p >= 2",
+    "积分端点有限且落在参数域内，u0 < u1",
+    "NURBS 权重全为正的有限数"
+  ],
+  "invariants": [
+    "弧长可加：L(a,b) + L(b,c) = L(a,c)（1e-12 相对）",
+    "直线段弧长 = 端点距离；曲率 = 0",
+    "单位圆 NURBS：弧长 = π/2（整段四分之一圆），曲率 = 1",
+    "抛物线 y=x²：顶点曲率 = 2（解析值）"
+  ],
+  "degeneracy_branches": [
+    {"family": "N", "trigger": "|C'| = 0（尖点/重节点）", "action": "FAIL: DomainError（切矢/曲率无定义）"},
+    {"family": "N", "trigger": "p = 1 求曲率", "action": "FAIL: DomainError（二阶导不存在）"},
+    {"family": "S", "trigger": "参数域退化或 u1 <= u0", "action": "FAIL: DomainError"},
+    {"family": "N", "trigger": "非 2D/3D 维度求曲率", "action": "FAIL: DomainError（叉积无定义）"}
+  ],
+  "oracle_tests": "tests/test_curve_geometry.py（解析弧长/曲率、可加性、Simpson 独立求积对拍、圆不变量、退化拒绝）",
+  "depends_on": ["curve_eval"]
+}

@@ -1,0 +1,88 @@
+{
+  "mutants": [
+    {
+      "id": "PRED_ORIENT2D_SIGN",
+      "file": "primitives/predicates.py",
+      "find": "    det = detleft - detright",
+      "replace": "    det = detleft + detright",
+      "tests": ["tests/test_predicates.py"],
+      "description": "orient2d 浮点滤波里行列式符号翻转（精确回退逻辑也应被触发）"
+    },
+    {
+      "id": "BSPLINE_DERIVATIVE_SIGN",
+      "file": "primitives/bspline.py",
+      "find": "            out[r] = (j / d_left * left if d_left > 0.0 else 0.0) - (",
+      "replace": "            out[r] = (j / d_left * left if d_left > 0.0 else 0.0) + (",
+      "tests": ["tests/test_curve.py"],
+      "description": "基函数导数递推的第二项符号翻转（式 2.7 的减号变加号）"
+    },
+    {
+      "id": "NURBS_LEIBNIZ_SIGN",
+      "file": "operators/curve_eval/impl.py",
+      "find": "                rhs[d] -= c * Cj[d] * wk",
+      "replace": "                rhs[d] += c * Cj[d] * wk",
+      "tests": ["tests/test_rational.py"],
+      "description": "NURBS 导数 Leibniz 反解的符号翻转（圆不变量应抓住）"
+    },
+    {
+      "id": "INTERPOLATION_ASSEMBLY_COLUMN",
+      "file": "operators/curve_interpolation/impl.py",
+      "find": "            A[i][span - p + r] = N",
+      "replace": "            A[i][span - p] = N",
+      "tests": ["tests/test_interpolation.py"],
+      "description": "插值矩阵装配写错列下标（控制点窗口整体错位）"
+    },
+    {
+      "id": "KNOT_INSERTION_ALPHA_DENOM",
+      "file": "operators/knot_insertion/impl.py",
+      "find": "        den = U[i + p] - U[i]",
+      "replace": "        den = U[i + p + 1] - U[i]",
+      "tests": [
+        "tests/test_knot_ops.py::test_geometry_invariance_random",
+        "tests/test_knot_ops.py::test_hand_example_p1_exact"
+      ],
+      "description": "Boehm 插入的 alpha 分母多取一个节点（最易抄错的公式细节）"
+    },
+    {
+      "id": "KNOT_INSERTION_SKIP_MULTIPLICITY_GUARD",
+      "file": "operators/knot_insertion/impl.py",
+      "find": "    if r + s > p:",
+      "replace": "    if False:",
+      "tests": [
+        "tests/test_knot_ops.py::test_exceeding_multiplicity_is_rejected",
+        "tests/test_knot_ops.py::test_endpoint_insertion_is_rejected"
+      ],
+      "description": "跳过重数上限的退化守卫（产生 C^-1 的非法曲线）"
+    },
+    {
+      "id": "CURVE_GEOMETRY_CURVATURE_EXPONENT",
+      "file": "operators/curve_geometry/impl.py",
+      "find": "    return num / (speed_sq ** 1.5)",
+      "replace": "    return num / (speed_sq ** 2.0)",
+      "tests": [
+        "tests/test_curve_geometry.py::test_circle_curvature_is_one",
+        "tests/test_curve_geometry.py::test_parabola_curvature_analytic"
+      ],
+      "description": "曲率公式 |C'|^3 写成 |C'|^4（量纲错误）"
+    },
+    {
+      "id": "DEGREE_ELEVATION_ALPHA",
+      "file": "operators/degree_elevation/impl.py",
+      "find": "        a = i / q",
+      "replace": "        a = i / p",
+      "tests": [
+        "tests/test_knot_ops.py::test_elevate_preserves_geometry",
+        "tests/test_knot_ops.py::test_elevate_bezier_hand_example"
+      ],
+      "description": "升阶凸组合系数用错次数（分母 q 写成 p）"
+    },
+    {
+      "id": "FILLET_TANGENT_DISTANCE",
+      "file": "operators/fillet_2d/impl.py",
+      "find": "    t = radius / math.tan(half)",
+      "replace": "    t = radius * math.tan(half)",
+      "tests": ["tests/test_fillet.py"],
+      "description": "圆角切点距离 t=r/tan(θ/2) 写成乘法（相切条件被破坏）"
+    }
+  ]
+}

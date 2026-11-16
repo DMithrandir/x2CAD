@@ -1,0 +1,73 @@
+{
+  "summary": {
+    "total": 9,
+    "killed": 9,
+    "survived": 0,
+    "capture_rate": 1.0
+  },
+  "outcomes": [
+    {
+      "mutant_id": "PRED_ORIENT2D_SIGN",
+      "description": "orient2d 浮点滤波里行列式符号翻转（精确回退逻辑也应被触发）",
+      "killed": true,
+      "returncode": 1,
+      "detail": "!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!"
+    },
+    {
+      "mutant_id": "BSPLINE_DERIVATIVE_SIGN",
+      "description": "基函数导数递推的第二项符号翻转（式 2.7 的减号变加号）",
+      "killed": true,
+      "returncode": 1,
+      "detail": "!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!"
+    },
+    {
+      "mutant_id": "NURBS_LEIBNIZ_SIGN",
+      "description": "NURBS 导数 Leibniz 反解的符号翻转（圆不变量应抓住）",
+      "killed": true,
+      "returncode": 1,
+      "detail": "!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!"
+    },
+    {
+      "mutant_id": "INTERPOLATION_ASSEMBLY_COLUMN",
+      "description": "插值矩阵装配写错列下标（控制点窗口整体错位）",
+      "killed": true,
+      "returncode": 1,
+      "detail": "!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!"
+    },
+    {
+      "mutant_id": "KNOT_INSERTION_ALPHA_DENOM",
+      "description": "Boehm 插入的 alpha 分母多取一个节点（最易抄错的公式细节）",
+      "killed": true,
+      "returncode": 1,
+      "detail": "!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!"
+    },
+    {
+      "mutant_id": "KNOT_INSERTION_SKIP_MULTIPLICITY_GUARD",
+      "description": "跳过重数上限的退化守卫（产生 C^-1 的非法曲线）",
+      "killed": true,
+      "returncode": 1,
+      "detail": "!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!"
+    },
+    {
+      "mutant_id": "CURVE_GEOMETRY_CURVATURE_EXPONENT",
+      "description": "曲率公式 |C'|^3 写成 |C'|^4（量纲错误）",
+      "killed": true,
+      "returncode": 1,
+      "detail": "!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!"
+    },
+    {
+      "mutant_id": "DEGREE_ELEVATION_ALPHA",
+      "description": "升阶凸组合系数用错次数（分母 q 写成 p）",
+      "killed": true,
+      "returncode": 1,
+      "detail": "!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!"
+    },
+    {
+      "mutant_id": "FILLET_TANGENT_DISTANCE",
+      "description": "圆角切点距离 t=r/tan(θ/2) 写成乘法（相切条件被破坏）",
+      "killed": true,
+      "returncode": 1,
+      "detail": "!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!"
+    }
+  ]
+}

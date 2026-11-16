@@ -1,0 +1,86 @@
+{
+  "operator": "knot_insertion",
+  "cases": [
+    {
+      "case_id": "knot_insertion.p1_hand_example",
+      "module": "operators.knot_insertion.impl",
+      "function": "insert_knot",
+      "args": [[0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 4.0], 1, [[0.0], [1.0], [2.0], [3.0], [4.0]], 1.5, 1],
+      "checks": [
+        {
+          "kind": "close",
+          "expected": [
+            [0.0, 0.0, 1.0, 1.5, 2.0, 3.0, 4.0, 4.0],
+            [[0.0], [1.0], [1.5], [2.0], [3.0], [4.0]]
+          ],
+          "rel_tol": 1e-15,
+          "abs_tol": 1e-15
+        }
+      ],
+      "tags": ["analytic", "regression"]
+    },
+    {
+      "case_id": "knot_insertion.nurbs_quarter_circle_refined",
+      "module": "operators.knot_insertion.impl",
+      "function": "insert_knot_nurbs",
+      "args": [
+        [0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        2,
+        [[1.0, 0.0], [1.0, 1.0], [0.0, 1.0]],
+        [1.0, 0.7071067811865476, 1.0],
+        0.5,
+        1
+      ],
+      "checks": [
+        {
+          "kind": "close",
+          "expected": [
+            [0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0],
+            [
+              [1.0, 0.0],
+              [1.0, 0.41421356237309503],
+              [0.41421356237309503, 1.0],
+              [0.0, 1.0]
+            ],
+            [1.0, 0.8535533905932737, 0.8535533905932737, 1.0]
+          ],
+          "rel_tol": 1e-12
+        }
+      ],
+      "tags": ["analytic", "nurbs"]
+    },
+    {
+      "case_id": "knot_insertion.exceeding_multiplicity_raises",
+      "module": "operators.knot_insertion.impl",
+      "function": "insert_knot",
+      "args": [[0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0], 2, [[0.0, 0.0], [1.0, 0.0], [1.0, 1.0], [0.0, 1.0]], 0.5, 2],
+      "checks": [{"kind": "raises", "exception": "DomainError", "match": "重数"}],
+      "tags": ["degeneracy", "S-family"]
+    },
+    {
+      "case_id": "knot_insertion.endpoint_raises",
+      "module": "operators.knot_insertion.impl",
+      "function": "insert_knot",
+      "args": [[0.0, 0.0, 0.0, 1.0, 1.0, 1.0], 2, [[0.0, 0.0], [1.0, 1.0], [2.0, 0.0]], 0.0, 1],
+      "checks": [{"kind": "raises", "exception": "DomainError", "match": "重数"}],
+      "tags": ["degeneracy", "N-family"]
+    },
+    {
+      "case_id": "knot_insertion.r0_is_identity",
+      "module": "operators.knot_insertion.impl",
+      "function": "insert_knot",
+      "args": [[0.0, 0.0, 0.0, 1.0, 1.0, 1.0], 2, [[0.0, 0.0], [1.0, 1.0], [2.0, 0.0]], 0.5, 0],
+      "checks": [
+        {
+          "kind": "close",
+          "expected": [
+            [0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+            [[0.0, 0.0], [1.0, 1.0], [2.0, 0.0]]
+          ],
+          "rel_tol": 1e-15
+        }
+      ],
+      "tags": ["invariant"]
+    }
+  ]
+}

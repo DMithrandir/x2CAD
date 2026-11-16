@@ -1,0 +1,31 @@
+{
+  "slug": "surface_eval",
+  "name": "张量积 B 样条曲面求值与偏导数",
+  "category": "surface",
+  "dim": "3D",
+  "version": "0.1.0",
+  "source": "Piegl & Tiller, The NURBS Book 2nd ed., A3.5/A3.6 的张量积直接合成",
+  "signature": {
+    "inputs": {
+      "U,V": "knots per direction (clamped)",
+      "pu,pv": "degrees per direction",
+      "net": "(nu+1)x(nv+1) 控制网，点任意同维",
+      "u,v": "参数（各自域内）",
+      "du,dv": "导数阶（≤ 对应次数）"
+    },
+    "outputs": ["point: tuple", "out[k][l] = S^{(k,l)}(u,v)"]
+  },
+  "preconditions": [
+    "双向节点向量与控制网形状互相吻合（规则网格）",
+    "du ≤ pu，dv ≤ pv"
+  ],
+  "invariants": [
+    "固定 v0 后 u ↦ S(u,v0) 与以 Σ_j N_j(v0)P_{i,j} 为控制点的曲线一致（1e-10）",
+    "双线性片混合偏导 = 常向量（角点差分）",
+    "Bézier 片与 Bernstein 双和逐点一致（1e-11）"
+  ],
+  "degeneracy_branches": [
+    {"family": "S", "trigger": "某方向内部重数 s 处求 > p-s 阶偏导", "action": "EXACT(右向单侧值)"}
+  ],
+  "oracle_tests": "tests/test_surface.py（Bézier 闭式、双线性片、二维有限差分含混合偏导、曲线-曲面一致性）"
+}

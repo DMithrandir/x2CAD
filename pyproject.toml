@@ -1,0 +1,9 @@
+[project]
+name = "x2cad"
+version = "0.1.0"
+description = "X2CAD：harness + agent 生长式 CAD 内核（NURBS 数学核心先行，ADR-0001）"
+requires-python = ">=3.9"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

@@ -1,0 +1,31 @@
+{
+  "slug": "curve_interpolation",
+  "name": "全局 B 样条曲线插值",
+  "category": "curve",
+  "dim": "any",
+  "version": "0.1.0",
+  "source": "Piegl & Tiller, The NURBS Book 2nd ed., A9.1 + 式 (9.4)(9.5)(9.8)",
+  "signature": {
+    "inputs": {
+      "points": "m+1 个同维数据点（m ≥ p）",
+      "p": "次数 ≥ 1",
+      "params": "可选，严格递增（给定参数插值）",
+      "param_method": "uniform | chordal | centripetal"
+    },
+    "outputs": ["(knots, ctrl): 插值 B 样条曲线表示"]
+  },
+  "preconditions": [
+    "数据点数 ≥ p+1；同维；给定参数严格递增",
+    "默认弦长/向心参数化下相邻数据点不得重合"
+  ],
+  "invariants": [
+    "后置：max_i |C(ū_i) - Q_i| ≤ 1e-8（超限抛 DomainError）",
+    "同空间往返：从平均节点空间采样再插值，恢复原控制点（1e-7）",
+    "多项式重现：在给定参数处采样 ≤p 次多项式，插值结果全域等于该多项式（1e-7）"
+  ],
+  "degeneracy_branches": [
+    {"family": "S", "trigger": "相邻重复数据点（零段长）", "action": "FAIL: DomainError（显式拒绝，不静默扰动）"},
+    {"family": "N", "trigger": "线性系统奇异/病态（主元 < 1e-13）", "action": "FAIL: DomainError"}
+  ],
+  "oracle_tests": "tests/test_interpolation.py（精确恢复、多项式重现、正弦收敛阶、端到端过点、参数化性质）"
+}

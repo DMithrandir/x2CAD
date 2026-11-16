@@ -1,0 +1,89 @@
+{
+  "operator": "curve_eval",
+  "cases": [
+    {
+      "case_id": "curve_eval.point.quadratic_bezier_t025",
+      "module": "operators.curve_eval.impl",
+      "function": "curve_point",
+      "args": [[0.0, 0.0, 0.0, 1.0, 1.0, 1.0], 2, [[0.0, 0.0], [1.0, 1.0], [2.0, 0.0]], 0.25],
+      "checks": [{"kind": "close", "expected": [0.5, 0.375], "rel_tol": 1e-12}],
+      "tags": ["analytic", "bezier"]
+    },
+    {
+      "case_id": "curve_eval.point.endpoint_interpolation",
+      "module": "operators.curve_eval.impl",
+      "function": "curve_point",
+      "args": [[0.0, 0.0, 0.0, 1.0, 1.0, 1.0], 2, [[0.0, 0.0], [1.0, 1.0], [2.0, 0.0]], 1.0],
+      "checks": [{"kind": "exact", "expected": [2.0, 0.0]}],
+      "tags": ["invariant", "endpoint"]
+    },
+    {
+      "case_id": "curve_eval.derivatives.method_a_quadratic_bezier",
+      "module": "operators.curve_eval.impl",
+      "function": "curve_derivatives",
+      "args": [[0.0, 0.0, 0.0, 1.0, 1.0, 1.0], 2, [[0.0, 0.0], [1.0, 1.0], [2.0, 0.0]], 0.25, 2],
+      "checks": [
+        {
+          "kind": "close",
+          "expected": [[0.5, 0.375], [2.0, 1.0], [0.0, -4.0]],
+          "rel_tol": 1e-12
+        }
+      ],
+      "tags": ["analytic", "derivative"]
+    },
+    {
+      "case_id": "curve_eval.derivatives.method_b_matches_method_a",
+      "module": "operators.curve_eval.impl",
+      "function": "curve_derivatives_by_differencing",
+      "args": [[0.0, 0.0, 0.0, 1.0, 1.0, 1.0], 2, [[0.0, 0.0], [1.0, 1.0], [2.0, 0.0]], 0.25, 2],
+      "checks": [
+        {
+          "kind": "close",
+          "expected": [[0.5, 0.375], [2.0, 1.0], [0.0, -4.0]],
+          "rel_tol": 1e-12
+        }
+      ],
+      "tags": ["dual-implementation"]
+    },
+    {
+      "case_id": "curve_eval.nurbs.quarter_circle_midpoint",
+      "module": "operators.curve_eval.impl",
+      "function": "nurbs_curve_point",
+      "args": [
+        [0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        2,
+        [[1.0, 0.0], [1.0, 1.0], [0.0, 1.0]],
+        [1.0, 0.7071067811865476, 1.0],
+        0.5
+      ],
+      "checks": [
+        {"kind": "close", "expected": [0.7071067811865476, 0.7071067811865476], "rel_tol": 1e-12}
+      ],
+      "tags": ["analytic", "circle-invariant"]
+    },
+    {
+      "case_id": "curve_eval.point.parameter_out_of_domain_raises",
+      "module": "operators.curve_eval.impl",
+      "function": "curve_point",
+      "args": [[0.0, 0.0, 0.0, 1.0, 1.0, 1.0], 2, [[0.0, 0.0], [1.0, 1.0], [2.0, 0.0]], 1.5],
+      "checks": [{"kind": "raises", "exception": "DomainError", "match": "参数"}],
+      "tags": ["degeneracy", "domain"]
+    },
+    {
+      "case_id": "invariants.partition_of_unity",
+      "module": "verify.invariants",
+      "function": "partition_of_unity_residual",
+      "args": [[0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0], 2, 0.3],
+      "checks": [{"kind": "close", "expected": 0.0, "abs_tol": 1e-15}],
+      "tags": ["invariant", "tier1"]
+    },
+    {
+      "case_id": "invariants.derivative_partition",
+      "module": "verify.invariants",
+      "function": "derivative_partition_residual",
+      "args": [[0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0], 2, 0.3, 1],
+      "checks": [{"kind": "close", "expected": 0.0, "abs_tol": 1e-15}],
+      "tags": ["invariant", "tier1"]
+    }
+  ]
+}

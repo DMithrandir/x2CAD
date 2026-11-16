@@ -1,0 +1,37 @@
+{
+  "operator": "fillet_2d",
+  "cases": [
+    {
+      "case_id": "fillet_2d.right_angle_arc_length",
+      "module": "operators.fillet_2d.impl",
+      "function": "fillet_arc_length",
+      "args": [[1.0, 0.0], [0.0, 0.0], [0.0, 1.0], 1.0],
+      "checks": [{"kind": "close", "expected": 1.5707963267948966, "rel_tol": 1e-12}],
+      "tags": ["analytic"]
+    },
+    {
+      "case_id": "fillet_2d.sixty_degree_arc_length",
+      "module": "operators.fillet_2d.impl",
+      "function": "fillet_arc_length",
+      "args": [[1.0, 0.0], [0.0, 0.0], [0.5, 0.8660254037844386], 0.1],
+      "checks": [{"kind": "close", "expected": 0.20943951023931953, "rel_tol": 1e-12}],
+      "tags": ["analytic"]
+    },
+    {
+      "case_id": "fillet_2d.radius_too_large_raises",
+      "module": "operators.fillet_2d.impl",
+      "function": "fillet_arc_length",
+      "args": [[1.0, 0.0], [0.0, 0.0], [0.0, 1.0], 2.0],
+      "checks": [{"kind": "raises", "exception": "DomainError", "match": "过大"}],
+      "tags": ["degeneracy", "S-family"]
+    },
+    {
+      "case_id": "fillet_2d.collinear_raises",
+      "module": "operators.fillet_2d.impl",
+      "function": "fillet_arc_length",
+      "args": [[1.0, 0.0], [0.0, 0.0], [2.0, 0.0], 0.1],
+      "checks": [{"kind": "raises", "exception": "DomainError", "match": "共线"}],
+      "tags": ["degeneracy", "C-family"]
+    }
+  ]
+}
