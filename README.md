@@ -8,6 +8,8 @@
 ![Mutation](https://img.shields.io/badge/mutation-9%2F9%20killed-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
+> 仓库地址：<https://github.com/DMithrandir/x2CAD>
+
 ---
 
 ## 1. 为什么做这件事（Why This Exists）
@@ -116,7 +118,7 @@ x2cad/
 纯 Python 实现，**无第三方运行时依赖**（仅测试需要 `pytest`，Python ≥ 3.9）：
 
 ```pwsh
-git clone https://github.com/DMithrandir/x2cad.git
+git clone https://github.com/DMithrandir/x2CAD.git
 cd x2cad
 
 # 1. 全部 oracle 测试（解析真值 / 独立参考实现 / 有限差分 / 不变量 四路对拍）
