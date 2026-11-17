@@ -1,0 +1,82 @@
+{
+  "operator": "line_line_intersection",
+  "cases": [
+    {
+      "case_id": "line_line_intersection.crossing_point",
+      "module": "operators.line_line_intersection.impl",
+      "function": "intersection_point",
+      "args": [[0.0, 0.0], [2.0, 2.0], [0.0, 2.0], [2.0, 0.0]],
+      "checks": [{"kind": "close", "expected": [1.0, 1.0], "rel_tol": 1e-15, "abs_tol": 1e-15}],
+      "tags": ["analytic", "basic"]
+    },
+    {
+      "case_id": "line_line_intersection.crossing_kind",
+      "module": "operators.line_line_intersection.impl",
+      "function": "intersection_kind",
+      "args": [[0.0, 0.0], [2.0, 2.0], [0.0, 2.0], [2.0, 0.0]],
+      "checks": [{"kind": "exact", "expected": "point"}],
+      "tags": ["analytic", "classification"]
+    },
+    {
+      "case_id": "line_line_intersection.endpoint_touch",
+      "module": "operators.line_line_intersection.impl",
+      "function": "intersection_point",
+      "args": [[0.0, 0.0], [2.0, 0.0], [1.0, 0.0], [1.0, 2.0]],
+      "checks": [{"kind": "close", "expected": [1.0, 0.0], "rel_tol": 1e-15, "abs_tol": 1e-15}],
+      "tags": ["degeneracy", "T-family"]
+    },
+    {
+      "case_id": "line_line_intersection.parallel_none",
+      "module": "operators.line_line_intersection.impl",
+      "function": "intersection_kind",
+      "args": [[0.0, 0.0], [2.0, 0.0], [0.0, 1.0], [2.0, 1.0]],
+      "checks": [{"kind": "exact", "expected": "none"}],
+      "tags": ["analytic", "parallel"]
+    },
+    {
+      "case_id": "line_line_intersection.collinear_overlap",
+      "module": "operators.line_line_intersection.impl",
+      "function": "overlap_intervals",
+      "args": [[0.0, 0.0], [4.0, 0.0], [2.0, 0.0], [6.0, 0.0]],
+      "checks": [
+        {
+          "kind": "close",
+          "expected": [[0.5, 1.0], [0.0, 0.5]],
+          "rel_tol": 1e-15,
+          "abs_tol": 1e-15
+        }
+      ],
+      "tags": ["degeneracy", "C-family"]
+    },
+    {
+      "case_id": "line_line_intersection.collinear_touch_point",
+      "module": "operators.line_line_intersection.impl",
+      "function": "intersection_point",
+      "args": [[0.0, 0.0], [2.0, 0.0], [2.0, 0.0], [4.0, 0.0]],
+      "checks": [{"kind": "close", "expected": [2.0, 0.0], "rel_tol": 1e-15, "abs_tol": 1e-15}],
+      "tags": ["degeneracy", "C-family", "T-family"]
+    },
+    {
+      "case_id": "line_line_intersection.huge_coordinates",
+      "module": "operators.line_line_intersection.impl",
+      "function": "intersection_point",
+      "args": [[0.0, 0.0], [10000000000000000.0, 10000000000000000.0], [0.0, 10000000000000000.0], [10000000000000000.0, 0.0]],
+      "checks": [
+        {
+          "kind": "close",
+          "expected": [5000000000000000.0, 5000000000000000.0],
+          "rel_tol": 1e-15
+        }
+      ],
+      "tags": ["degeneracy", "N-family"]
+    },
+    {
+      "case_id": "line_line_intersection.zero_length_raises",
+      "module": "operators.line_line_intersection.impl",
+      "function": "intersect_segments",
+      "args": [[1.0, 1.0], [1.0, 1.0], [0.0, 0.0], [1.0, 0.0]],
+      "checks": [{"kind": "raises", "exception": "DomainError", "match": "退化为点"}],
+      "tags": ["degeneracy", "S-family"]
+    }
+  ]
+}

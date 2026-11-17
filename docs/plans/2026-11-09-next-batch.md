@@ -1,6 +1,6 @@
 # 探索日志与下一批计划（2026-11-09）
 
-> 状态：本批已完成；下一批待执行（自主探索模式，用户授权"自主进入接下来全部探索"）
+> 状态：本批已完成；**2026-11-18：P1-A1 已执行**（见 §5），A2/A3 待做
 > 关联：`docs/adr/0002-p0-verification-and-ref-contract.md`、母文档 §11 执行记录
 
 ---
@@ -23,7 +23,7 @@
 1. **Tier 3 差分对拍**：本机缺 `shapely` / `manifold3d` / `trimesh`；`verify` 目前靠 Tier 2
    解析真值（现有算子都适用），对拍层留待依赖安装。
 2. **Tier 5 过程化重放**：需要 P1 的 sketch/extrude 链；EntityRef 契约已就位。
-3. **P1 尚未开始**：2D 草图实体、约束求解器、2D 布尔。
+3. **P1 已开始**：P1-A1（`line_line_intersection`）已落地；2D 草图实体、约束求解器、2D 布尔与 A2/A3 仍待做。
 4. **3D 进阶**：fillet/chamfer 规格、SSI、网格 B-Rep 全在 P2+。
 
 ## 3. 下一批计划（按依赖序，每步可独立验收）
@@ -32,8 +32,7 @@
 
 | 步 | 内容 | oracle | 验收线 |
 |:--|:--|:--|:--|
-| A1 | `operators/line_line_intersection`：线段-线段求交，含平行/共线/端点接触 | 有理数精确判定（orient2d 符号）+ sympy 解析解 | 退化分类与参数值全部对拍；共线重叠区间的端点正确 |
-| A2 | `operators/line_bezier_intersection`：直线与二次/三次 Bézier 求交 | 代数求根（sympy）+ 代入回代残差 | 根的个数、去重、区间裁剪（Bézier clipping）与残差 < 1e-12 |
+| A1 | `operators/line_line_intersection`：线段-线段求交，含平行/共线/端点接触 | 有理数精确判定（orient2d 符号）+ sympy 解析解 | 退化分类与参数值全部对拍；共线重叠区间的端点正确 || A2 | `operators/line_bezier_intersection`：直线与二次/三次 Bézier 求交 | 代数求根（sympy）+ 代入回代残差 | 根的个数、去重、区间裁剪（Bézier clipping）与残差 < 1e-12 |
 | A3 | `operators/bezier_bezier_intersection`：细分 + 包围盒 + Newton 精修 | 细分自洽性 + 交点代入两条曲线残差 + sympy resultant | 横截/相切/重合三类用例；相切点不丢不重 |
 
 ### P1-B：2D 约束求解器（P1 的主心骨）
@@ -59,3 +58,20 @@
   而不是返回"最接近的解"——这需要一次 HITL 裁决（容差语义闸门）；
 - **Tier 3 依赖**：若无法安装 shapely，则 2D 布尔只能用自研真值 + 解析解，覆盖面下降，
   需在证据中标注。
+
+## 5. 执行记录（2026-11-18，P1-A1）
+
+- 新增算子 `operators/line_line_intersection`（`impl.py` + `spec.json` + 测试 + conformance 四件套）：
+  精确有理数判定（浮点无损转 `Fraction`），返回 `none / point / overlap` 三分类；
+  共线重叠返回 t/u 区间并保留反向对应关系；端点接触归入 `point`；零长度线段 `DomainError`。
+- oracle：`tests/test_line_line_intersection.py` 19 例——解析交点、端点/T 形接触、共线重叠、
+  反向对应、大坐标（1e16）、近平行、对称/平移/缩放协变、250 组整数坐标与 Fraction 独立参考的差分对拍。
+- conformance：`verify/cases/line_line_intersection.json` 8 条（总数 47）；退化语料新增
+  C-004（共线线段重叠）与 S-004（零长度线段），总数 17。
+- 变异：新增 5 个（参数开闭界、共线重叠下界、平行守卫、零长度守卫、参数符号），捕获率 14/14。
+- 实测教训（沿用 ADR-0002 D10 的口径）：`SEGMENT_INTERSECTION_ZERO_LENGTH_GUARD` 首次**存活**——
+  禁用 S 族守卫后代码落入共线分支的兜底 `DomainError`，而测试只匹配宽泛的「退化为点」，
+  于是仍然通过。把断言收紧到「第一条/第二条线段退化为点」后变异被杀。
+  存活变异再次说明：先怀疑测试写得不具体，再怀疑实现。
+- 缺口：A2（直线-Bézier 求交）与 A3（Bézier-Bézier）未做；2D 布尔装配依赖它们。
+

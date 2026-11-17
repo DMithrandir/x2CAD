@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-16T15:24:37+00:00",
+  "generated_at": "2026-11-17T16:45:55+00:00",
   "root": "C:\\Users\\desha\\Desktop\\CAD",
   "static": {
     "findings": 0,
@@ -9,10 +9,10 @@
     "missing_operators": []
   },
   "conformance": {
-    "cases": 39,
-    "cases_passed": 39,
-    "checks": 39,
-    "checks_passed": 39,
+    "cases": 47,
+    "cases_passed": 47,
+    "checks": 47,
+    "checks_passed": 47,
     "checks_failed": 0,
     "by_operator": {
       "curve_eval": {
@@ -41,6 +41,10 @@
       },
       "knot_insertion": {
         "checks": 5,
+        "failed": 0
+      },
+      "line_line_intersection": {
+        "checks": 8,
         "failed": 0
       },
       "surface_eval": {

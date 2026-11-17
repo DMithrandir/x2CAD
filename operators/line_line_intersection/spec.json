@@ -1,0 +1,42 @@
+{
+  "slug": "line_line_intersection",
+  "name": "2D 线段-线段求交（精确有理数判定，含共线重叠）",
+  "category": "curve",
+  "dim": "2D",
+  "version": "0.1.0",
+  "source": "经典线段求交；精确判定沿用 primitives/predicates.py 的『浮点输入无损转有理数再判符号』口径（orient2d 的 Fraction 回退同一思想）",
+  "signature": {
+    "inputs": {
+      "p": "线段 1 起点 (x, y)",
+      "q": "线段 1 终点 (x, y)",
+      "r": "线段 2 起点 (x, y)",
+      "s": "线段 2 终点 (x, y)"
+    },
+    "outputs": [
+      "SegmentIntersection(kind ∈ {none, point, overlap})",
+      "point: 唯一交点坐标（kind=point）",
+      "t, u: 交点在两条线段上的参数 ∈ [0, 1]（kind=point）",
+      "t_interval, u_interval: 共线重叠区间（kind=overlap；方向相反时 u_interval 递减）"
+    ]
+  },
+  "preconditions": [
+    "四条输入点均为有限的二维坐标",
+    "两条线段长度均非零（p != q 且 r != s）",
+    "共线重叠区间允许；近共线不做容差合并（精确于输入浮点值）"
+  ],
+  "invariants": [
+    "交换两条线段：kind 不变，point 坐标相同（重算误差 ≤ 1e-15）",
+    "kind=point 时 t, u ∈ [0, 1]，且 point 用两条线段的参数各重算一次结果一致",
+    "kind=overlap 时 t_interval 与 u_interval 等长（按各自线段长度加权后），端点对应关系保持",
+    "整体平移与缩放不改变 kind；交点按同一变换变化",
+    "平行/共线/端点接触全部由精确有理数判定，不因浮点舍入翻转"
+  ],
+  "degeneracy_branches": [
+    {"family": "S", "trigger": "线段长度为零（p == q 或 r == s）", "action": "FAIL: DomainError（没有方向，交点语义未定义）"},
+    {"family": "C", "trigger": "两条线段共线且重叠", "action": "RESULT: kind=overlap，返回两条线段上的参数区间（不硬凑成单点）"},
+    {"family": "T", "trigger": "端点接触 / T 形接触（参数恰为 0 或 1）", "action": "RESULT: kind=point（端点是闭线段的一部分，不吞掉）"},
+    {"family": "N", "trigger": "近共线 / 近平行输入（行列式极小）", "action": "EXACT: 有理数判定符号，不按容差近似；结果仍是确定的三分类"}
+  ],
+  "oracle_tests": "tests/test_line_line_intersection.py（解析交点、Fraction 独立参考、共线重叠区间、端点接触、对称性、退化拒绝）",
+  "depends_on": []
+}

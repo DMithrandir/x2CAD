@@ -1,6 +1,6 @@
 # 算子级 conformance suite（白盒评测规范）
 
-> 版本 0.1.0 | 2026-11-09 | 实现：`verify/conformance.py` + `verify/cases/*.json`
+> 版本 0.2.0 | 2026-11-18 | 实现：`verify/conformance.py` + `verify/cases/*.json`
 > 关联：`docs/plans/2026-08-20-x2cad-kernel-design.md` §6（四层证据）、§7.4（变异自审）
 
 ---
@@ -98,7 +98,7 @@ python -m verify.mutation                       # 预言机变异自审
   "generated_at": "...",
   "static": {"findings": 0, "details": []},
   "coverage": {"missing_operators": []},
-  "conformance": {"cases": 39, "cases_passed": 39, "checks": 39, "checks_passed": 39, "by_operator": {...}},
+  "conformance": {"cases": 47, "cases_passed": 47, "checks": 47, "checks_passed": 47, "by_operator": {...}},
   "failures": []
 }
 ```
@@ -110,9 +110,9 @@ python -m verify.mutation                       # 预言机变异自审
 | 项 | 线 | 现状 |
 |:--|:--|:--|
 | 静态检查问题 | 0 | 0 |
-| 覆盖率缺口 | 0 | 0（8 个算子全有 cases） |
-| conformance 失败 | 0 | 0（39 cases / 39 checks） |
-| 变异捕获率 | 100% | 9/9 = 100% |
+| 覆盖率缺口 | 0 | 0（9 个算子全有 cases） |
+| conformance 失败 | 0 | 0（47 cases / 47 checks） |
+| 变异捕获率 | 100% | 14/14 = 100% |
 | 默认域鲁棒性通过率 | 100% | 已对四分之一圆弧长验证（Tier 4 测试） |
 
 ## 8. 已知限制

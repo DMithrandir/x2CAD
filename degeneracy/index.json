@@ -1,6 +1,6 @@
 {
   "version": "0.1.0",
-  "updated": "2026-11-09",
+  "updated": "2026-11-18",
   "families": {
     "T": "相切 / 一阶接触",
     "C": "共面 / 重合",
@@ -173,6 +173,28 @@
       "test": "tests/test_rational.py::test_weight_validation",
       "operators": ["curve_eval"],
       "tags": ["nurbs", "degeneracy"]
+    },
+    {
+      "id": "C-004",
+      "family": "C",
+      "title": "共线线段把重叠区段压成单点",
+      "triggers": ["collinear segments", "overlap", "coincident edges", "one-dimensional intersection"],
+      "scenario": "两条共线线段部分重叠：交集是一维区段，不是单点。若只取「最近的一个交点」，重叠区段被丢掉；布尔装配时它本应成为共享边的一段。",
+      "remediation": "按一维闭区间求交，返回带方向对应关系的 t/u 区间；只有区间退化为一点时才报 point。",
+      "test": "tests/test_line_line_intersection.py::test_collinear_overlap_interval",
+      "operators": ["line_line_intersection"],
+      "tags": ["2d", "intersection"]
+    },
+    {
+      "id": "S-004",
+      "family": "S",
+      "title": "线段长度为 0：方向与参数都未定义",
+      "triggers": ["zero-length segment", "degenerate segment", "duplicate endpoints"],
+      "scenario": "求交/装配时遇到端点重合的线段：方向未定义，参数 t 的归一化出现 0/0，任何交点都「看起来正确」。",
+      "remediation": "入口显式 DomainError；调用方先去重，或把退化段显式降级为点图元，不静默扰动坐标。",
+      "test": "tests/test_line_line_intersection.py::test_zero_length_segments_are_rejected",
+      "operators": ["line_line_intersection"],
+      "tags": ["2d", "degenerate-input"]
     }
   ]
 }

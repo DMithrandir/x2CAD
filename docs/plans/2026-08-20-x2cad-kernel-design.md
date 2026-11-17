@@ -354,3 +354,13 @@ CAD/
 > 仍显式不做：拓扑变异本身（`split`/`merge` 只记录事实）；按距离自动选段（拒绝猜，
 > 留给 P1 带几何信息的操作显式给出序号或参数）；Tier 5 重放 runner。
 
+> **执行记录（2026-11-18，P1-A1）**：进入 P1。新增 `operators/line_line_intersection`：
+> 2D 线段求交，输入浮点无损转 `Fraction` 后判定，返回 `none / point / overlap` 三分类；
+> 共线重叠返回参数区间并保留反向对应，端点接触归 `point`，零长度线段 `DomainError`。
+> 19 例 oracle（含 250 组与独立 Fraction 参考的差分对拍）、8 条 conformance、5 个新变异；
+> 全套 251 例通过，门禁 PASS，变异捕获率 14/14。退化语料补 C-004 / S-004（共 17 条）。
+>
+> 下一步：P1-A2（直线-Bézier 求交，代数求根 + 区间裁剪）与 A3（Bézier-Bézier 细分 + Newton），
+> 再进入 2D 布尔装配；Tier 3 外部对拍仍受本机依赖限制。
+
+

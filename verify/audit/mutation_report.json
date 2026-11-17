@@ -1,7 +1,7 @@
 {
   "summary": {
-    "total": 9,
-    "killed": 9,
+    "total": 14,
+    "killed": 14,
     "survived": 0,
     "capture_rate": 1.0
   },
@@ -65,6 +65,41 @@
     {
       "mutant_id": "FILLET_TANGENT_DISTANCE",
       "description": "圆角切点距离 t=r/tan(θ/2) 写成乘法（相切条件被破坏）",
+      "killed": true,
+      "returncode": 1,
+      "detail": "!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!"
+    },
+    {
+      "mutant_id": "SEGMENT_INTERSECTION_ENDPOINT_BOUND",
+      "description": "把闭线段的参数下界从 0 改成开界，端点接触交点被吞掉",
+      "killed": true,
+      "returncode": 1,
+      "detail": "!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!"
+    },
+    {
+      "mutant_id": "SEGMENT_INTERSECTION_OVERLAP_LOWER",
+      "description": "共线重叠区间的下界取错方向（重叠区间被扩到线段起点之外）",
+      "killed": true,
+      "returncode": 1,
+      "detail": "!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!"
+    },
+    {
+      "mutant_id": "SEGMENT_INTERSECTION_PARALLEL_GUARD",
+      "description": "跳过平行/共线区分守卫，平行线段被误判为共线重叠",
+      "killed": true,
+      "returncode": 1,
+      "detail": "!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!"
+    },
+    {
+      "mutant_id": "SEGMENT_INTERSECTION_ZERO_LENGTH_GUARD",
+      "description": "跳过零长度线段守卫（退化 S 族输入未被拒绝）",
+      "killed": true,
+      "returncode": 1,
+      "detail": "!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!"
+    },
+    {
+      "mutant_id": "SEGMENT_INTERSECTION_PARAM_SIGN",
+      "description": "交点参数 t 的分母符号翻转（交点落到线段另一侧）",
       "killed": true,
       "returncode": 1,
       "detail": "!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!"
