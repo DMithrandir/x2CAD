@@ -16,11 +16,11 @@
 
 AI 与 CAD 交叉领域的瓶颈，已经从**“能不能生成几何”**转移到**“什么算生成对了、算子在容差边界下到底稳不稳”**：
 
-* **生成侧早已拥挤不堪**：无论是基于指针序列统一 B-Rep 与命令生成的 [Pointer-CAD (arXiv:2603.04337)](https://arxiv.org/abs/2603.04337)、多模态条件生成的 [CAD-MLLM (arXiv:2411.04954)](https://www.alphaxiv.org/abs/2411.04954)、引入显式构建计划中间表示的 [MIRAGE-CAD (arXiv:2608.28669)](https://arxiv.org/abs/2608.28669)，还是采用双标量场连续表示的 [DualBrep (arXiv:2606.31579)](https://arxiv.org/abs/2606.31579)，都在争夺上游生成能力。
-* **评测侧仍停留在“系统级黑盒”**：2026 年涌现的 [CADTests / CADTestBench (arXiv:2605.07807)](https://arxiv.org/abs/2605.07807)、[CADBench (arXiv:2605.10873)](https://arxiv.org/abs/2605.10873) 与 [RealCADBench (arXiv:2609.03773)](https://arxiv.org/abs/2609.03773) 全部采用“输入模型/脚本 → 运行时导出网格 → 算体积 IoU 或视觉打分”的黑盒模式。当底层几何内核发生布尔失败或相切崩溃时，黑盒分数无法定位是哪一个算子、在哪一类退化配置下失手。
-* **开源内核缺乏白盒证据链**：工业界被商业内核与西门子 [D-Cubed](https://www.siemens.com/en-us/products/plm-components/d-cubed/) 等组件垄断；开源界唯一的全功能 B-Rep 内核 [Open CASCADE Technology (OCCT)](https://occt3d.com/open-cascade-technology/) 虽功能庞大，但容差行为缺乏形式化证据链，也缺少公开的算子级 Conformance Suite。
+* **生成侧早已拥挤不堪**：无论是基于指针序列统一 B-Rep 与命令生成的 [Pointer-CAD (arXiv:2603.04337)](https://arxiv.org/abs/2603.04337)、多模态条件生成的 [CAD-MLLM (arXiv:2411.04954)](https://www.alphaxiv.org/abs/2411.04954)，还是引入显式构建计划中间表示的 [MIRAGE-CAD (arXiv:2608.28669)](https://arxiv.org/abs/2608.28669) 与连续场表示的 [DualBrep (arXiv:2606.31579)](https://arxiv.org/abs/2606.31579)，都在争夺上游生成能力。
+* **评测侧仍停留在“系统级黑盒”**：现有的主流评测基准（[CADTests / CADTestBench (arXiv:2605.07807)](https://arxiv.org/abs/2605.07807)、[CADBench (arXiv:2605.10873)](https://arxiv.org/abs/2605.10873)、[RealCADBench (arXiv:2609.03773)](https://arxiv.org/abs/2609.03773)）普遍采用“输入模型/脚本 → 运行时导出网格 → 算体积 IoU 或视觉打分”的黑盒模式。当底层几何内核发生布尔失败或相切崩溃时，黑盒分数既无法暴露非流形微裂缝，也无法定位是哪一个算子、在哪一类退化配置下失手。
+* **开源内核缺乏白盒证据链**：工业界长期被 Parasolid、ACIS 等商业几何内核与西门子 [D-Cubed](https://www.siemens.com/en-us/products/plm-components/d-cubed/) 等约束求解组件垄断；开源界唯一的全功能 B-Rep 内核 [Open CASCADE Technology (OCCT)](https://occt3d.com/open-cascade-technology/) 虽功能庞大，但容差行为（Fuzzy Tolerance）缺乏形式化证据链，也缺少公开的算子级 Conformance Suite。
 
-**本项目的定位不是重写一遍 [OCCT](https://occt3d.com/open-cascade-technology/)，而是补齐开源 CAD 与 AI-for-CAD 缺失的“判据层 + 最小可证明内核切片”**：以 **预言机先于内核（Oracle-First）** 为铁律，将退化五族语料、四层证据链、变异自审与指针式实体引用契约（`EntityRef`）打造为可复用的公开基础设施。
+**本项目的定位不是重写一遍大而全的 [OCCT](https://occt3d.com/open-cascade-technology/)，而是补齐开源 CAD 与 AI-for-CAD 缺失的“判据层 + 最小可证明内核切片”**：以 **预言机先于内核（Oracle-First）** 为铁律，将退化五族语料、四层证据链、变异自审与解决拓扑持久性引用难题的**指针式实体引用契约（`EntityRef`）** 打造为可复用的公开基础设施。
 
 当前状态（2026-11-16）：N1 曲线算子、N2 节点操作、P0 验证台与 `EntityRef` 契约（含分裂/合并谱系）已落地；232 例 oracle 测试全绿，`python -m verify` 门禁 PASS，变异捕获率 9/9。二维垂直切片（P1）是下一步。
 
