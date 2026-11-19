@@ -1,8 +1,9 @@
 # EntityRef 实体引用契约 v0.2（含派生寻址，规格先行）
 
-> 版本 0.2.0 | 2026-11-16 | 实现：`kernel/entity_ref.py` | 测试：`tests/test_entity_ref.py`
+> 版本 0.2.1 | 2026-11-20 | 实现：`kernel/entity_ref.py` | 测试：`tests/test_entity_ref.py`
 > 来源：`docs/plans/2026-09-16-pointer-cad-reference.md` §4.2（D1 决策）；
 > `docs/adr/0003-entity-derivation-lineage.md`（v0.2 派生寻址）；
+> `docs/adr/0004-determinism-vs-tnp.md`（确定性重放 ≠ TNP 的边界）；
 > 硬约束：`docs/adr/0001-nurbs-first.md`（本层只定契约，不含拓扑变异）
 
 ---
@@ -136,3 +137,19 @@ manifold3d 只用于网格布尔的质量属性对拍，不承载引用语义。
    序号或参数，平局/缝隙一律报错。
 3. **Tier 5 过程化重放 runner**：需要 P1 的 sketch/extrude 算子链；本契约提供其引用基础。
 4. **`sketch.json` 指针脚本格式**：等 P1 草图实体落地后按本契约扩展。
+
+## 10. 边界：确定性重放 ≠ 拓扑持久命名（TNP）
+
+本契约的验收线（重放一致、tombstone、split/merge 谱系）证明的是**确定性重放与单步派生寻址**，
+不是工业界所说的 TNP。两者差一整层：
+
+| | 本契约已保证 | 工业界 TNP 要保证 |
+|:--|:--|:--|
+| 输入变化 | 同一脚本、同一顺序重跑 | 草图尺寸/特征增删后的参数化重生成 |
+| 引用目标 | 同一创建序号的实体与单步派生关系 | 语义实体（"顶面右前边"），即使 id/参数/边数都变了 |
+| 机制 | 单调计数 + `RefMapping` + `DerivedRef` | 特征历史锚点 + 邻接语义签名 + 候选重匹配 |
+
+结论：`EntityTable` 的 `e0, e1, ...` 与 `DerivedRef` 的局部序号/参数**不是**持久命名。
+参数化 TNP 列为独立阶段（ADR-0004），不在本契约内承诺；对外材料不得把确定性重放
+表述为 TNP。
+

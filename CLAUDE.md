@@ -2,7 +2,7 @@
 
 用 harness + agent 渐进生长的 CAD 几何内核。母设计文档：`docs/plans/2026-08-20-x2cad-kernel-design.md`。
 决策记录：`docs/adr/`（ADR-0001 范围纪律、ADR-0002 P0 验证台与算子契约、
-ADR-0003 EntityRef 派生寻址）。
+ADR-0003 EntityRef 派生寻址、ADR-0004 确定性重放 ≠ TNP）。
 
 ## 硬性范围纪律（ADR-0001 / ADR-0002）
 

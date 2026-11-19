@@ -11,13 +11,44 @@ from operators.line_line_intersection.impl import (
     intersect_segments,
     intersection_kind,
     intersection_point,
+    intersection_point_exact,
     overlap_intervals,
+    point_on_segment_exact,
 )
 from primitives.bspline import DomainError
 
 
 def _close(a, b, tol=1e-15):
     return abs(a - b) <= tol * max(1.0, abs(a), abs(b))
+
+
+def test_exact_point_contract_prevents_two_step_cascade():
+    # 交点 (1, 5/3)：float 坐标的 Fraction 值与真值不同，下一步精确谓词会判它不在线上
+    p, q, r, s = (0.0, 0.0), (3.0, 5.0), (1.0, 0.0), (1.0, 2.0)
+    exact = intersection_point_exact(p, q, r, s)
+    assert exact == (Fraction(1), Fraction(5, 3))
+
+    result = intersect_segments(p, q, r, s)
+    assert result.point_exact == exact
+    assert result.point == pytest.approx((1.0, 5.0 / 3.0), abs=1e-15)
+
+    # 精确坐标在两条线段上；float 坐标按二进制值回推时不在原线段上
+    assert point_on_segment_exact(p, q, exact)
+    assert point_on_segment_exact(r, s, exact)
+    assert not point_on_segment_exact(p, q, result.point)
+
+
+def test_point_on_segment_exact_rejects_collinear_outside_and_off_line():
+    assert point_on_segment_exact((0.0, 0.0), (2.0, 0.0), (1.0, 0.0))
+    assert not point_on_segment_exact((0.0, 0.0), (2.0, 0.0), (3.0, 0.0))
+    assert not point_on_segment_exact((0.0, 0.0), (2.0, 0.0), (1.0, 1e-300))
+
+
+def test_intersection_point_exact_rejects_non_point_results():
+    with pytest.raises(DomainError, match="不交于唯一"):
+        intersection_point_exact((0.0, 0.0), (1.0, 0.0), (0.0, 1.0), (1.0, 1.0))
+    with pytest.raises(DomainError, match="不交于唯一"):
+        intersection_point_exact((0.0, 0.0), (2.0, 0.0), (1.0, 0.0), (3.0, 0.0))
 
 
 def test_crossing_point_and_parameters():

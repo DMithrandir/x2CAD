@@ -14,7 +14,8 @@
     },
     "outputs": [
       "SegmentIntersection(kind ∈ {none, point, overlap})",
-      "point: 唯一交点坐标（kind=point）",
+      "point: 唯一交点坐标（kind=point，float，仅用于展示/序列化）",
+      "point_exact: 唯一交点的精确有理数坐标（kind=point，跨算子链使用）",
       "t, u: 交点在两条线段上的参数 ∈ [0, 1]（kind=point）",
       "t_interval, u_interval: 共线重叠区间（kind=overlap；方向相反时 u_interval 递减）"
     ]
@@ -27,6 +28,7 @@
   "invariants": [
     "交换两条线段：kind 不变，point 坐标相同（重算误差 ≤ 1e-15）",
     "kind=point 时 t, u ∈ [0, 1]，且 point 用两条线段的参数各重算一次结果一致",
+    "kind=point 时 point_exact 与 point 同源，且 point_on_segment_exact 对精确坐标在两条线段上均返回 True；对 float 坐标不承诺（级联容差）",
     "kind=overlap 时 t_interval 与 u_interval 等长（按各自线段长度加权后），端点对应关系保持",
     "整体平移与缩放不改变 kind；交点按同一变换变化",
     "平行/共线/端点接触全部由精确有理数判定，不因浮点舍入翻转"

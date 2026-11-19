@@ -363,4 +363,13 @@ CAD/
 > 下一步：P1-A2（直线-Bézier 求交，代数求根 + 区间裁剪）与 A3（Bézier-Bézier 细分 + Newton），
 > 再进入 2D 布尔装配；Tier 3 外部对拍仍受本机依赖限制。
 
+> **执行记录（2026-11-20，阶段 review 与修复）**：新增 `docs/reviews/2026-11-20-stage-review.md`，
+> 明确"判据层/Harness 范式有价值、全功能内核落后两代且不追"的边界。修复两处 P1 内伤：
+> ① 求交结果增加精确坐标 `point_exact` + `intersection_point_exact` + `point_on_segment_exact`，
+> 用 `(1, 5/3)` 回归证明 float 交点回推不在原线段上（级联容差）；
+> ② 新增 ADR-0004，收准 `EntityRef` 口径为"确定性重放 + 单步派生寻址"，参数化 TNP 单列阶段。
+> 另补 `docs/specs/constraint-solver.md`（分支手性验收线）与 `docs/specs/analytic-primitives.md`
+> （Segment×Arc / Arc×Arc 闭式矩阵），README 增补工业深水区非目标。254 例测试、15/15 变异、PASS。
+
+
 

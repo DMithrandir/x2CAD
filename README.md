@@ -3,7 +3,7 @@
 **把几何内核的“经验玄学”，变成可形式化验证、可变异自审、可跨内核对拍的工程判据。**
 
 ![Python](https://img.shields.io/badge/python-3.9%2B-blue)
-![Tests](https://img.shields.io/badge/tests-251%20passed-brightgreen)
+![Tests](https://img.shields.io/badge/tests-254%20passed-brightgreen)
 ![Conformance](https://img.shields.io/badge/conformance-47%20cases-blue)
 ![Mutation](https://img.shields.io/badge/mutation-14%2F14%20killed-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-blue)
@@ -20,9 +20,9 @@ AI 与 CAD 交叉领域的瓶颈，已经从**“能不能生成几何”**转�
 * **评测侧仍停留在“系统级黑盒”**：现有的主流评测基准（[CADTests / CADTestBench (arXiv:2605.07807)](https://arxiv.org/abs/2605.07807)、[CADBench (arXiv:2605.10873)](https://arxiv.org/abs/2605.10873)、[RealCADBench (arXiv:2609.03773)](https://arxiv.org/abs/2609.03773)）普遍采用“输入模型/脚本 → 运行时导出网格 → 算体积 IoU 或视觉打分”的黑盒模式。当底层几何内核发生布尔失败或相切崩溃时，黑盒分数既无法暴露非流形微裂缝，也无法定位是哪一个算子、在哪一类退化配置下失手。
 * **开源内核缺乏白盒证据链**：工业界长期被 Parasolid、ACIS 等商业几何内核与西门子 [D-Cubed](https://www.siemens.com/en-us/products/plm-components/d-cubed/) 等约束求解组件垄断；开源界唯一的全功能 B-Rep 内核 [Open CASCADE Technology (OCCT)](https://occt3d.com/open-cascade-technology/) 虽功能庞大，但容差行为（Fuzzy Tolerance）缺乏形式化证据链，也缺少公开的算子级 Conformance Suite。
 
-**本项目的定位不是重写一遍大而全的 [OCCT](https://occt3d.com/open-cascade-technology/)，而是补齐开源 CAD 与 AI-for-CAD 缺失的“判据层 + 最小可证明内核切片”**：以 **预言机先于内核（Oracle-First）** 为铁律，将退化五族语料、四层证据链、变异自审与解决拓扑持久性引用难题的**指针式实体引用契约（`EntityRef`）** 打造为可复用的公开基础设施。
+**本项目的定位不是重写一遍大而全的 [OCCT](https://occt3d.com/open-cascade-technology/)，而是补齐开源 CAD 与 AI-for-CAD 缺失的“判据层 + 最小可证明内核切片”**：以 **预言机先于内核（Oracle-First）** 为铁律，将退化五族语料、四层证据链、变异自审与支撑确定性重放/单步派生寻址的**实体引用契约（`EntityRef`；参数化 TNP 不在本层承诺，见 [ADR-0004](docs/adr/0004-determinism-vs-tnp.md)）** 打造为可复用的公开基础设施。
 
-当前状态（2026-11-18）：N1 曲线算子、N2 节点操作、P0 验证台与 `EntityRef` 契约（含分裂/合并谱系）已落地；P1 已开始，第一个叶子算子 `line_line_intersection`（精确线段求交）进入内核。251 例 oracle 测试全绿，`python -m verify` 门禁 PASS，变异捕获率 14/14。下一步是 P1-A2：直线与 Bézier 求交。
+当前状态（2026-11-20）：N1 曲线算子、N2 节点操作、P0 验证台与 `EntityRef` 契约（含分裂/合并谱系）已落地；P1 已开始，第一个叶子算子 `line_line_intersection` 进入内核，并补上跨算子链的精确输出契约（`point_exact`）。254 例 oracle 测试全绿，`python -m verify` 门禁 PASS，变异捕获率 15/15。下一步是解析图元通道（线段-圆弧）与 A2 直线-Bézier 求交。
 
 ---
 
@@ -61,6 +61,8 @@ AI 与 CAD 交叉领域的瓶颈，已经从**“能不能生成几何”**转�
 * **显式生命周期与 Tombstone 拦截**：被删除的实体引用立即转为 `Tombstone`，任何后续解引用强制抛出结构化 `DomainError`/`TombstoneError`，杜绝静默张冠李戴。
 * **派生谱系追踪（1-to-N / N-to-1 Lineage）**：Boehm 分裂与求交打断产生子实体时，用 `DerivedRef`（序号或参数选择子，右连续口径）确定性寻址；共线边合并用 `merge` 显式重编号并保留来源谱系。
 
+**边界（ADR-0004）**：以上保证的是**确定性重放与单步派生寻址**，不是参数化 CAD 的拓扑持久命名（TNP）。修改草图尺寸导致实体增删后，如何让"顶面右前边"仍指向同一条语义边，需要特征历史锚点 + 邻接签名，属独立阶段，本契约不承诺。
+
 ---
 
 ## 3. 演进路线图与验收红线（Dependency-Driven Roadmap）
@@ -70,7 +72,7 @@ AI 与 CAD 交叉领域的瓶颈，已经从**“能不能生成几何”**转�
 | 阶段 | 模块范围 | 为什么处于该依赖位置 | 硬性验收线（Acceptance Gate） | 状态 |
 | :--- | :--- | :--- | :--- | :--- |
 | **N1** | **曲线基础算子**<br>（求值、解析求导、插值） | 占 CAD 内核功能面积 ~5%，但属于唯一能被 100% 形式化证明正确的纯数学基座 | 解析真值 / 差分对拍 / 不变量全绿；边界重数与端点插值零漂移 | **Done**（2026-08） |
-| **#1 (P0)** | **白盒验证台 + 预言机变异自审** | 算子未大规模入核前，必须先审计裁判本身；此时构建成本最低、后续复利最高 | 静态检查 0 findings；覆盖率 0 缺口；conformance 0 失败；变异捕获率 **14/14 = 100%** | **Done**（2026-11-09） |
+| **#1 (P0)** | **白盒验证台 + 预言机变异自审** | 算子未大规模入核前，必须先审计裁判本身；此时构建成本最低、后续复利最高 | 静态检查 0 findings；覆盖率 0 缺口；conformance 0 失败；变异捕获率 **15/15 = 100%** | **Done**（2026-11-09） |
 | **#2** | **`EntityRef` 契约**<br>（指针引用 + 重编号 + 谱系） | 一旦布尔运算动工，无契约的引用机制必将全盘返工 | 同一脚本重放两遍 id 序列严格一致；Tombstone 引用 100% 报错；1-to-N / N-to-1 谱系可解析 | **Done**（2026-11-16，v0.2） |
 | **#4 (N2)** | **节点操作与曲线微分几何**<br>（Boehm、升阶、分裂、弧长/切矢/曲率、2D 圆角） | 纯数学叶子分支收口，为参数域求交打断提供无损几何操作 | 四路 Oracle 全部通过；节点插入几何误差 < 1e-12（测试钉住） | **Done**（2026-11-09） |
 | **#3 (P1)** | **二维完整垂直切片**<br>（2D 约束求解 + 2D 曲线布尔） | 二维是唯一能由个人将“所有算子与拓扑装配都做对”的完整闭环（参考 [SolveSpace](https://solvespace.com/) / [arXiv:1006.1126](https://arxiv.org/abs/1006.1126)） | 约束残差 < 1e-10；多边形层与 [Shapely](https://shapely.readthedocs.io/) 对拍一致，曲线层通过合成解析解对拍 | **In Progress**（P1-A1 线段求交已落地；A2/A3 进行中） |
@@ -105,7 +107,7 @@ x2cad/
 │                                  # spec_check / conformance（cases/）/ mutation（audit/）/ evidence/
 ├── degeneracy/                    # 退化五族知识库：index.json + README（schema 与用法）
 ├── x2cad/                         # 流水线脚手架：内容寻址产物缓存
-├── tests/                         # 251 例 oracle 测试
+├── tests/                         # 254 例 oracle 测试
 ├── conftest.py                    # pytest 根目录锚点
 ├── pyproject.toml                 # 包元数据与 pytest 配置
 ├── CLAUDE.md                      # 项目路由与硬性范围纪律（协作入口）
@@ -154,6 +156,8 @@ conformance：47/47 cases，47/47 checks，证据 verify/evidence/report.json
 * **不盲目复刻 [OCCT](https://occt3d.com/open-cascade-technology/) 的全量工业长尾特性**：在未建立完备的退化语料与四层 Oracle 之前，绝不堆砌缺乏正确性证明的 3D 变半径倒角或复杂特判。
 * **不把容差当作全局魔法常量（Global Magic Epsilon）**：拒绝在代码里散落硬编码的 `1e-7`；容差是显式类型（`ToleranceContext`），符号判定走精确谓词，两者不可互相替代。
 * **不在 P1 阶段自研符号图分解约束求解器**：P1 只做最小闭包（局部 LM + SVD 欠定诊断）或封装 `libslvs`，避免陷入图约简长尾。
+* **不追工业内核的三大深水区**：3D 变半径圆角/顶点混合（rolling-ball fillet、setback vertex blend）、等距偏移/抽壳的自交裁剪（swallowtail）、直接建模（推拉面 + 删面自愈）。这些是百人年级工程，追了必烂尾；本项目的判据台只覆盖可独立对拍的叶子与单步装配。
+* **不做 STEP 脏几何修复（Shape Healing）与 GPU 隐式场**：`DomainError` 是本项目对自产几何的纪律；外部破面/脏容差与 SDF/GPU 路线属另一条产品线。
 
 ---
 
@@ -161,9 +165,9 @@ conformance：47/47 cases，47/47 checks，证据 verify/evidence/report.json
 
 | 项 | 状态 |
 | :--- | :--- |
-| oracle 测试 | 251 例全绿（`tests/test_entity_ref.py` 26 例、`tests/test_line_line_intersection.py` 19 例） |
+| oracle 测试 | 254 例全绿（`tests/test_entity_ref.py` 26 例、`tests/test_line_line_intersection.py` 22 例） |
 | `python -m verify` | PASS：静态检查 0 findings、覆盖率 0 缺口、conformance 47/47 cases |
-| 变异自审 | 14/14 = 100% 捕获（`verify/audit/mutation_report.json`） |
+| 变异自审 | 15/15 = 100% 捕获（`verify/audit/mutation_report.json`） |
 | 退化语料 | 17 条，覆盖 T/C/S/I/N 五族，零死链 |
 | Tier 3 外部对拍 | **未启用**：缺 `shapely` / `manifold3d` / `trimesh`；接入口径见 `docs/specs/cad-operator-conformance.md` §10 |
 | Tier 5 过程化重放 | **未实现**：需要 P1 的 sketch/extrude 链；`EntityRef` 契约已为其提供引用基础 |

@@ -126,6 +126,14 @@
       "replace": "        t = _cross(w, d2) / -denom",
       "tests": ["tests/test_line_line_intersection.py::test_crossing_point_and_parameters"],
       "description": "交点参数 t 的分母符号翻转（交点落到线段另一侧）"
+    },
+    {
+      "id": "SEGMENT_EXACT_CONTAINMENT_GUARD",
+      "file": "operators/line_line_intersection/impl.py",
+      "find": "    if _cross(d, w) != 0:",
+      "replace": "    if False:",
+      "tests": ["tests/test_line_line_intersection.py::test_point_on_segment_exact_rejects_collinear_outside_and_off_line"],
+      "description": "精确包含判定跳过共线检查：不在直线上的点被误判为在线段上"
     }
   ]
 }

@@ -75,3 +75,20 @@
   存活变异再次说明：先怀疑测试写得不具体，再怀疑实现。
 - 缺口：A2（直线-Bézier 求交）与 A3（Bézier-Bézier）未做；2D 布尔装配依赖它们。
 
+## 6. 执行记录（2026-11-20，阶段 review 后的修复）
+
+- 新增阶段 review：`docs/reviews/2026-11-20-stage-review.md`（价值判断、7 个工业界代差、
+  追/不追决策表、修复清单）。
+- **级联容差修复**：`line_line_intersection` 的 `point` 结果新增 `point_exact`（`Fraction` 坐标），
+  新增 `intersection_point_exact` 与 `point_on_segment_exact`；新增回归测试证明
+  "float 交点按二进制回推不在原线段上"（(1, 5/3) 用例）。跨算子链契约写进模块文档与 `spec.json`。
+- **TNP 口径修复**：新增 `docs/adr/0004-determinism-vs-tnp.md`；契约文档加 §10 边界；
+  README / 站点页不再声称"解决拓扑持久性引用难题"，改为"确定性重放 + 单步派生寻址"。
+- **约束求解器验收规范**：`docs/specs/constraint-solver.md`，明确"只测残差抓不住分支翻转"，
+  要求手性/分支连续性验收线。
+- **解析图元通道规格**：`docs/specs/analytic-primitives.md`，给出 Segment×Arc、Arc×Arc 的
+  代数判定与输出契约，作为下一条实现线。
+- **非目标收口**：README 增加 3D 变半径圆角/抽壳/直接建模、STEP 修复、GPU 隐式场的显式不追。
+- 当前数字：254 例测试、47 conformance、15/15 变异；`python -m verify` PASS。
+
+

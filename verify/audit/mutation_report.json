@@ -1,7 +1,7 @@
 {
   "summary": {
-    "total": 14,
-    "killed": 14,
+    "total": 15,
+    "killed": 15,
     "survived": 0,
     "capture_rate": 1.0
   },
@@ -100,6 +100,13 @@
     {
       "mutant_id": "SEGMENT_INTERSECTION_PARAM_SIGN",
       "description": "交点参数 t 的分母符号翻转（交点落到线段另一侧）",
+      "killed": true,
+      "returncode": 1,
+      "detail": "!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!"
+    },
+    {
+      "mutant_id": "SEGMENT_EXACT_CONTAINMENT_GUARD",
+      "description": "精确包含判定跳过共线检查：不在直线上的点被误判为在线段上",
       "killed": true,
       "returncode": 1,
       "detail": "!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!"
