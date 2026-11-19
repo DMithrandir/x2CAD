@@ -1,8 +1,9 @@
 # 解析图元与求交矩阵（P1-A'，规格先行）
 
-> 版本 0.1.0 | 2026-11-20 | 状态：规格先行，未实现
+> 版本 0.2.0 | 2026-11-20 | 状态：矩阵 #1、#2 已落地
 > 关联：`docs/reviews/2026-11-20-stage-review.md` §2.3；
-> `operators/line_line_intersection/`（已落地的第一条）；
+> `operators/line_line_intersection/`（矩阵 #1）、
+> `operators/segment_arc_intersection/`（矩阵 #2）；
 > `docs/plans/2026-11-09-next-batch.md` §3 P1-A
 
 ---
@@ -37,13 +38,26 @@
 
 | # | 组合 | 方法 | 退化分支 | 状态 |
 |:--|:--|:--|:--|:--|
-| 1 | Segment × Segment | 有理数行列式 | 共线重叠、端点接触、零长 | **已落地** |
-| 2 | Segment × Circle/Arc | 代入二次方程；判别式精确判号；根过滤到线段与弧段 | 相切（重根）、端点根、弧端包含、零长线段 | 待实现 |
+| 1 | Segment × Segment | 有理数行列式 | 共线重叠、端点接触、零长 | **已落地**（`line_line_intersection`） |
+| 2 | Segment × Circle/Arc | 代入二次方程；判别式精确判号；根过滤到线段与弧段 | 相切（重根）、端点根、弧端包含、零长线段 | **已落地**（`segment_arc_intersection`；弧段过滤用起终向量叉积，见 §3.1） |
 | 3 | Circle/Arc × Circle/Arc | 圆心距 + 根轴；判别式精确判号；角度过滤 | 内切/外切、同心、重合、包含 | 待实现 |
 | 4 | Segment × NURBS | 代数求根 + 区间裁剪（A2） | 重根、端点根 | 待实现 |
 | 5 | NURBS × NURBS | 细分 + 包围盒 + Newton（A3） | 横截/相切/重合 | 待实现 |
 
 前三条是闭式代数，优先于 4/5；4/5 的通用通道只处理自由曲线。
+
+### 3.1 弧段包含的已实现口径（矩阵 #2 的实测决策）
+
+浮点角度比较不可靠，`segment_arc_intersection` 不比较 atan2 角度，而是把
+"交点方向是否在弧扇形内"化为**起终向量的有理数叉积符号**：
+
+- 劣弧（|sweep| ≤ π）：`cross(start, w)` 与 `cross(w, end)` 同号（含 0，端点属闭弧）；
+- 优弧（|sweep| > π）：`w` 不在补弧内即在弧上；
+- 顺时针弧整体取反符号。
+
+代价：扇形边界由 start/end 向量的构造舍入定义（名义角度 vs 构造向量可能差
+1ulp），这是文档化口径；对解析构造的圆角（`fillet_2d` 产出的 `Fillet2D`）
+天然一致，因为同一构造同时给出向量与角度。
 
 ## 4. 输出契约
 

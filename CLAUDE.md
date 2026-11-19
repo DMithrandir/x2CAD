@@ -42,6 +42,7 @@ operators/     算子库，每算子独立目录：spec.json + impl.py
   curve_geometry/        弧长（自适应求积）、单位切矢、曲率（依赖 curve_eval）
   fillet_2d/             二维圆角：两线段夹角处的相切圆弧
   line_line_intersection/ 2D 线段求交（精确有理数判定，共线重叠/端点接触分类）
+  segment_arc_intersection/ 2D 线段-圆弧求交（判别式精确判号 + 弧段向量过滤）
 kernel/        公共层（ADR-0001 装配层）：entity_ref.py = 实体引用契约（无拓扑变异）
 verify/        验证台：invariants / analytic / robustness / static_check / spec_check /
                conformance（cases/）/ mutation（audit/）/ evidence/

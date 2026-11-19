@@ -1,7 +1,7 @@
 {
   "summary": {
-    "total": 15,
-    "killed": 15,
+    "total": 18,
+    "killed": 18,
     "survived": 0,
     "capture_rate": 1.0
   },
@@ -107,6 +107,27 @@
     {
       "mutant_id": "SEGMENT_EXACT_CONTAINMENT_GUARD",
       "description": "精确包含判定跳过共线检查：不在直线上的点被误判为在线段上",
+      "killed": true,
+      "returncode": 1,
+      "detail": "!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!"
+    },
+    {
+      "mutant_id": "SEGMENT_ARC_DISC_SIGN",
+      "description": "判别式分类把相切（disc=0）并入相离：切点被吞掉",
+      "killed": true,
+      "returncode": 1,
+      "detail": "!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!"
+    },
+    {
+      "mutant_id": "SEGMENT_ARC_CW_ORIENTATION",
+      "description": "顺时针弧的包含判定用了逆时针符号约定（过滤反向）",
+      "killed": true,
+      "returncode": 1,
+      "detail": "!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!"
+    },
+    {
+      "mutant_id": "SEGMENT_ARC_ROOT_FILTER_BOUND",
+      "description": "两交点的参数过滤用开区间：交点在线段端点处被丢弃",
       "killed": true,
       "returncode": 1,
       "detail": "!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!"

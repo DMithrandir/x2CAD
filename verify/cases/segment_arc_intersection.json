@@ -1,0 +1,149 @@
+{
+  "operator": "segment_arc_intersection",
+  "cases": [
+    {
+      "case_id": "segment_arc_intersection.chord_two_points",
+      "module": "operators.segment_arc_intersection.impl",
+      "function": "segment_circle_intersection_report",
+      "args": [[-2.0, 0.0], [2.0, 0.0], [0.0, 0.0], 1.0],
+      "checks": [
+        {
+          "kind": "close",
+          "expected": {
+            "kind": "points",
+            "contained": false,
+            "hits": [
+              {"point": [-1.0, 0.0], "t": 0.25, "theta": 3.141592653589793, "tangent": false},
+              {"point": [1.0, 0.0], "t": 0.75, "theta": 0.0, "tangent": false}
+            ]
+          },
+          "rel_tol": 1e-12
+        }
+      ],
+      "tags": ["analytic", "basic"]
+    },
+    {
+      "case_id": "segment_arc_intersection.tangent_midpoint",
+      "module": "operators.segment_arc_intersection.impl",
+      "function": "segment_circle_intersection_report",
+      "args": [[-2.0, 1.0], [2.0, 1.0], [0.0, 0.0], 1.0],
+      "checks": [
+        {
+          "kind": "close",
+          "expected": {
+            "kind": "point",
+            "contained": false,
+            "hits": [
+              {"point": [0.0, 1.0], "t": 0.5, "theta": 1.5707963267948966, "tangent": true}
+            ]
+          },
+          "rel_tol": 1e-12
+        }
+      ],
+      "tags": ["degeneracy", "T-family"]
+    },
+    {
+      "case_id": "segment_arc_intersection.miss_outside",
+      "module": "operators.segment_arc_intersection.impl",
+      "function": "segment_circle_intersection_report",
+      "args": [[3.0, 0.0], [4.0, 0.0], [0.0, 0.0], 1.0],
+      "checks": [
+        {
+          "kind": "close",
+          "expected": {"kind": "none", "contained": false, "hits": []},
+          "rel_tol": 1e-12
+        }
+      ],
+      "tags": ["analytic", "classification"]
+    },
+    {
+      "case_id": "segment_arc_intersection.contained_inside",
+      "module": "operators.segment_arc_intersection.impl",
+      "function": "segment_circle_intersection_report",
+      "args": [[0.2, 0.0], [0.5, 0.0], [0.0, 0.0], 1.0],
+      "checks": [
+        {
+          "kind": "close",
+          "expected": {"kind": "none", "contained": true, "hits": []},
+          "rel_tol": 1e-12
+        }
+      ],
+      "tags": ["degeneracy", "C-family"]
+    },
+    {
+      "case_id": "segment_arc_intersection.quarter_arc_filters",
+      "module": "operators.segment_arc_intersection.impl",
+      "function": "segment_arc_intersection_report",
+      "args": [
+        [-2.0, 0.0],
+        [2.0, 0.0],
+        [0.0, 0.0],
+        1.0,
+        0.0,
+        1.5707963267948966
+      ],
+      "checks": [
+        {
+          "kind": "close",
+          "expected": {
+            "kind": "point",
+            "contained": false,
+            "hits": [
+              {"point": [1.0, 0.0], "t": 0.75, "theta": 0.0, "tangent": false}
+            ]
+          },
+          "rel_tol": 1e-12
+        }
+      ],
+      "tags": ["analytic", "arc-filter"]
+    },
+    {
+      "case_id": "segment_arc_intersection.quarter_arc_diagonal",
+      "module": "operators.segment_arc_intersection.impl",
+      "function": "segment_arc_intersection_report",
+      "args": [
+        [-1.0, -1.0],
+        [1.0, 1.0],
+        [0.0, 0.0],
+        1.0,
+        0.0,
+        1.5707963267948966
+      ],
+      "checks": [
+        {
+          "kind": "close",
+          "expected": {
+            "kind": "point",
+            "contained": false,
+            "hits": [
+              {
+                "point": [0.7071067811865476, 0.7071067811865476],
+                "t": 0.8535533905932737,
+                "theta": 0.7853981633974483,
+                "tangent": false
+              }
+            ]
+          },
+          "rel_tol": 1e-12
+        }
+      ],
+      "tags": ["analytic", "arc-filter"]
+    },
+    {
+      "case_id": "segment_arc_intersection.zero_length_raises",
+      "module": "operators.segment_arc_intersection.impl",
+      "function": "intersect_segment_circle",
+      "args": [[1.0, 1.0], [1.0, 1.0], [0.0, 0.0], 1.0],
+      "checks": [{"kind": "raises", "exception": "DomainError", "match": "退化为点"}],
+      "tags": ["degeneracy", "S-family"]
+    },
+    {
+      "case_id": "segment_arc_intersection.zero_radius_raises",
+      "module": "operators.segment_arc_intersection.impl",
+      "function": "intersect_segment_circle",
+      "args": [[0.0, 0.0], [1.0, 0.0], [0.0, 0.0], 0.0],
+      "checks": [{"kind": "raises", "exception": "DomainError", "match": "半径"}],
+      "tags": ["degeneracy", "S-family"]
+    }
+  ]
+}

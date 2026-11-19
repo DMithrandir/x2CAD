@@ -1,0 +1,42 @@
+{
+  "slug": "segment_arc_intersection",
+  "name": "2D 线段-圆弧/圆求交（精确判号 + 弧段过滤）",
+  "category": "curve",
+  "dim": "2D",
+  "version": "0.1.0",
+  "source": "线段代入圆方程的二次式；判别式符号与参数/弧段过滤沿用 analytic-primitives.md §3-2 与『浮点无损转有理数』口径",
+  "signature": {
+    "inputs": {
+      "p": "线段起点 (x, y)",
+      "q": "线段终点 (x, y)",
+      "center": "圆心 (x, y)（intersect_segment_circle）或 Arc2D（intersect_segment_arc）",
+      "radius": "正的有限半径（intersect_segment_circle）",
+      "arc": "Arc2D(center, radius, start_angle, sweep)，0 < |sweep| ≤ 2π"
+    },
+    "outputs": [
+      "CircleSegmentIntersection(kind ∈ {none, point, points})",
+      "hits: [{point(float), t(线段参数), theta(极角), tangent(重根标记)}]，按 t 升序",
+      "contained: kind=none 且线段整体在圆内时为 True（区分相离与包含）"
+    ]
+  },
+  "preconditions": [
+    "线段长度非零；半径正且有限；扫角 ∈ (−2π,0)∪(0,2π]",
+    "输入均为有限二维坐标",
+    "判别式/参数界/弧段包含的符号全部在有理数上判定"
+  ],
+  "invariants": [
+    "每个交点到圆心距离 = r（相对误差 ≤ 1e-12）",
+    "hits 按 t 升序；t ∈ [0,1]；point 用 P0 + t·(Q−P) 回代一致",
+    "相切（判别式=0）给单点且 tangent=True，不与横截点合并",
+    "弧段过滤：交点方向向量与弧起终向量的叉积符号在有理数上判定，弧端点属于闭弧",
+    "整体平移与缩放不改变 kind 与 tangent 标记"
+  ],
+  "degeneracy_branches": [
+    {"family": "T", "trigger": "判别式 = 0（线段与圆相切）", "action": "RESULT: 单交点 tangent=True"},
+    {"family": "T", "trigger": "交点恰在弧端点/线段端点", "action": "RESULT: 属于闭图元，保留该交点"},
+    {"family": "C", "trigger": "线段整体在圆内且无交点", "action": "RESULT: kind=none, contained=True（区分相离）"},
+    {"family": "S", "trigger": "线段长度为零 / 半径非正 / 扫角为 0 或 |sweep|>2π", "action": "FAIL: DomainError"}
+  ],
+  "oracle_tests": "tests/test_segment_arc_intersection.py（解析切点、弦交点、入出点、弧段过滤、顺/逆时针、优弧包含、端点边界、退化拒绝、圆不变量回代）",
+  "depends_on": []
+}

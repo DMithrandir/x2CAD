@@ -371,5 +371,14 @@ CAD/
 > 另补 `docs/specs/constraint-solver.md`（分支手性验收线）与 `docs/specs/analytic-primitives.md`
 > （Segment×Arc / Arc×Arc 闭式矩阵），README 增补工业深水区非目标。254 例测试、15/15 变异、PASS。
 
+> **执行记录（2026-11-20，P1-A2'：解析矩阵 #2）**：新增 `operators/segment_arc_intersection`
+> —— 线段-圆弧/圆求交。二次式判别式在有理数上判号（disc<0 相离、=0 相切单点、>0 两点），
+> 弧段过滤不用 atan2 角度比较，而用交点方向与弧起终向量的**有理数叉积**（analytic-primitives
+> §3.1 文档化了"扇形边界由构造向量定义"的口径）；线段整体在圆内时 `contained=True`
+> 区分相离。18 例 oracle、8 条 conformance、3 个新变异。首轮 `SEGMENT_ARC_ROOT_FILTER_BOUND`
+> 存活（弦交点不在端点，没测到开区间吞端点根），补端点根用例后 18/18。
+> 全套 272 例、55 conformance、PASS。下一步：矩阵 #3 Arc×Arc（根轴法）。
+
+
 
 

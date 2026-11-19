@@ -97,8 +97,13 @@ Exact Constructions 全程持有精确代数数，绝不中途退回 `float`。
 - [x] **解析图元规格**：[analytic-primitives.md](../specs/analytic-primitives.md)，
   给出 Segment×Arc、Arc×Arc 的判定与输出契约。
 - [x] **非目标收口**：README §6 增加三大深水区、STEP 修复、GPU 隐式场的显式不追。
-- [ ] **实现 Segment×Arc**：判别式精确判号 + 根过滤到线段与弧段（下一批）。
-- [ ] **实现 Arc×Arc / Circle×Circle**：根轴法 + 同心/包含/相切分类。
+- [x] **实现 Segment×Arc**（2026-11-20 追加）：`operators/segment_arc_intersection`，
+  判别式有理数精确判号，弧段过滤用起终向量叉积（见 analytic-primitives §3.1）；
+  18 例 oracle（切点/弦交/入出点/顺逆时针/优弧/端点根/退化拒绝/圆不变量回代）、
+  8 条 conformance、3 个新变异（判别式分类、顺时针符号、端点根过滤）。
+  首轮变异 `SEGMENT_ARC_ROOT_FILTER_BOUND` 存活——原测试的弦交点不在端点，
+  补 `test_endpoint_root_is_kept` 后捕获。当前 272 例测试、55 conformance、18/18 变异。
+- [ ] **实现 Arc×Arc / Circle×Circle**：根轴法 + 同心/包含/相切分类（下一批）。
 - [ ] **A2/A3**：直线-Bézier、Bézier-Bézier 求交。
 - [ ] **TNP 设计**：特征历史锚点 + 邻接签名（独立 ADR，不进 P1）。
 - [ ] **脏几何修复 / 3D 深水区**：保持 Non-Goal，不排期。
@@ -109,9 +114,9 @@ Exact Constructions 全程持有精确代数数，绝不中途退回 `float`。
 
 | 项 | 值 |
 |:--|:--|
-| oracle 测试 | 254 例全绿 |
-| conformance | 47/47 cases |
-| 变异自审 | 15/15 = 100% |
+| oracle 测试 | 272 例全绿 |
+| conformance | 55/55 cases |
+| 变异自审 | 18/18 = 100% |
 | 静态检查 | 0 findings |
 | 门禁 | `python -m verify` PASS |
 

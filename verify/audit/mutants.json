@@ -134,6 +134,30 @@
       "replace": "    if False:",
       "tests": ["tests/test_line_line_intersection.py::test_point_on_segment_exact_rejects_collinear_outside_and_off_line"],
       "description": "精确包含判定跳过共线检查：不在直线上的点被误判为在线段上"
+    },
+    {
+      "id": "SEGMENT_ARC_DISC_SIGN",
+      "file": "operators/segment_arc_intersection/impl.py",
+      "find": "    if disc < 0:",
+      "replace": "    if disc <= 0:",
+      "tests": ["tests/test_segment_arc_intersection.py::test_tangent_single_point"],
+      "description": "判别式分类把相切（disc=0）并入相离：切点被吞掉"
+    },
+    {
+      "id": "SEGMENT_ARC_CW_ORIENTATION",
+      "file": "operators/segment_arc_intersection/impl.py",
+      "find": "        return c_sw <= 0 and c_we <= 0",
+      "replace": "        return c_sw >= 0 and c_we >= 0",
+      "tests": ["tests/test_segment_arc_intersection.py::test_cw_arc_filters_by_orientation"],
+      "description": "顺时针弧的包含判定用了逆时针符号约定（过滤反向）"
+    },
+    {
+      "id": "SEGMENT_ARC_ROOT_FILTER_BOUND",
+      "file": "operators/segment_arc_intersection/impl.py",
+      "find": "        if 0 <= t <= 1:\n            x = pf[0] + t * d[0]\n            y = pf[1] + t * d[1]\n            hits.append(_hit(x, y, t, tangent=False))",
+      "replace": "        if 0 < t < 1:\n            x = pf[0] + t * d[0]\n            y = pf[1] + t * d[1]\n            hits.append(_hit(x, y, t, tangent=False))",
+      "tests": ["tests/test_segment_arc_intersection.py::test_endpoint_root_is_kept"],
+      "description": "两交点的参数过滤用开区间：交点在线段端点处被丢弃"
     }
   ]
 }
