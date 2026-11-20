@@ -50,6 +50,9 @@ body::after{
 /* 图框 */
 .frame{border:2px solid var(--ink);outline:1px solid var(--ink);outline-offset:5px;padding:44px 48px 56px;background:linear-gradient(160deg,rgba(255,255,255,.35),rgba(255,255,255,0) 40%)}
 .mono{font-family:var(--mono)}
+.backbar{margin:0 0 22px;font-size:12.5px;letter-spacing:.04em}
+.backbar a{color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--line);padding-bottom:1px}
+.backbar a:hover{color:var(--seal);border-color:var(--seal)}
 /* ===== 页眉 ===== */
 header{display:flex;justify-content:space-between;align-items:flex-start;gap:32px;flex-wrap:wrap;border-bottom:2px solid var(--ink);padding-bottom:28px}
 .brand .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.32em;color:var(--seal);text-transform:uppercase;margin-bottom:10px}
@@ -186,6 +189,7 @@ footer a:hover{color:var(--seal);border-color:var(--seal)}
 <body>
 <div class="sheet">
 <div class="frame">
+<p class="backbar mono"><a href="https://dmithrandir.github.io/x2cad/">← 返回 X2CAD 项目页</a></p>
 
 <header>
   <div class="brand">
@@ -197,7 +201,7 @@ footer a:hover{color:var(--seal);border-color:var(--seal)}
     <div class="tb-head">TITLE BLOCK · 图签</div>
     <table>
       <tr><td class="k">图号</td><td class="v">X2CAD-RM-001</td></tr>
-      <tr><td class="k">版本</td><td class="v">v0.3 · 2026-11-20</td></tr>
+      <tr><td class="k">版本</td><td class="v">v0.4 · 2026-11-20</td></tr>
       <tr><td class="k">阶段</td><td class="v">P1 · 2D 垂直切片</td></tr>
       <tr><td class="k">门禁</td><td class="v"><span class="stamp-done">PASS</span></td></tr>
       <tr><td class="k">仓库</td><td class="v">DMithrandir/x2CAD</td></tr>
@@ -207,11 +211,11 @@ footer a:hover{color:var(--seal);border-color:var(--seal)}
 
 <!-- 证据条 -->
 <div class="evidence" role="list" aria-label="当前验证证据">
-  <div class="ev hot" role="listitem"><div class="num">289</div><div class="lbl">oracle 测试全绿</div></div>
-  <div class="ev" role="listitem"><div class="num">65<small>/65</small></div><div class="lbl">conformance 用例</div></div>
-  <div class="ev hot" role="listitem"><div class="num">21<small>/21</small></div><div class="lbl">变异捕获率 100%</div></div>
+  <div class="ev hot" role="listitem"><div class="num">311</div><div class="lbl">oracle 测试全绿</div></div>
+  <div class="ev" role="listitem"><div class="num">74<small>/74</small></div><div class="lbl">conformance 用例</div></div>
+  <div class="ev hot" role="listitem"><div class="num">24<small>/24</small></div><div class="lbl">变异捕获率 100%</div></div>
   <div class="ev" role="listitem"><div class="num">0</div><div class="lbl">静态检查 findings</div></div>
-  <div class="ev" role="listitem"><div class="num">11<small> 算子</small></div><div class="lbl">四件套齐全 · 17 条退化语料</div></div>
+  <div class="ev" role="listitem"><div class="num">12<small> 算子</small></div><div class="lbl">四件套齐全 · 17 条退化语料</div></div>
 </div>
 <div class="evidence-note">// 证据随代码提交：verify/evidence/report.json · verify/audit/mutation_report.json · 复跑：python -m pytest / python -m verify / python -m verify.mutation</div>
 
@@ -243,7 +247,7 @@ footer a:hover{color:var(--seal);border-color:var(--seal)}
     <div class="ph-card">
       <div class="ph-head"><h3>白盒验证台 + 变异自审</h3><span class="status done">DONE</span></div>
       <p class="ph-desc">先审计裁判，再信任裁判。精确谓词（浮点滤波 + Fraction 回退）、容差上下文、SC001–SC008 静态检查、conformance 用例、Tier 4 扰动平面；对验证台自身注入变异，捕获率必须 100%。</p>
-      <div class="gate"><span class="gk">GATE</span><span>静态 0 findings · 覆盖率 0 缺口 · conformance 0 失败 · 变异 21/21</span></div>
+      <div class="gate"><span class="gk">GATE</span><span>静态 0 findings · 覆盖率 0 缺口 · conformance 0 失败 · 变异 24/24</span></div>
       <div class="chips"><span class="chip ok">predicates</span><span class="chip ok">tolerance</span><span class="chip ok">static_check</span><span class="chip ok">mutation</span></div>
     </div>
   </div>
@@ -275,14 +279,14 @@ footer a:hover{color:var(--seal);border-color:var(--seal)}
     <div class="ph-rail"><div class="node"></div></div>
     <div class="ph-card">
       <div class="ph-head"><h3>2D 垂直切片</h3><span class="status active">IN PROGRESS</span></div>
-      <p class="ph-desc">二维是唯一能由个人把「所有算子与拓扑装配都做对」的完整闭环。解析闭式求交通道已收口，正跨入多项式通道与约束求解。</p>
+      <p class="ph-desc">二维是唯一能由个人把「所有算子与拓扑装配都做对」的完整闭环。解析闭式通道收口后，多项式通道已开启（线段×Bézier 落地），正向 Bézier×Bézier 与约束求解推进。</p>
       <div class="submatrix">
-        <div class="sm-head">解析求交矩阵 · analytic-primitives</div>
+        <div class="sm-head">求交矩阵 · analytic-primitives + 多项式通道</div>
         <div class="sm-row ok"><span class="idx">#1</span><span>Segment × Segment — 有理数行列式，共线重叠 / 端点接触 / 零长分类</span><span class="st">已落地</span></div>
         <div class="sm-row ok"><span class="idx">#2</span><span>Segment × Circle/Arc — 判别式精确判号，弧段向量叉积过滤，切点单列</span><span class="st">已落地</span></div>
         <div class="sm-row ok"><span class="idx">#3</span><span>Circle × Circle — 根轴法，外离/外切/相交/内切/内含/重合六分类</span><span class="st">已落地</span></div>
-        <div class="sm-row todo"><span class="idx">A2</span><span>Segment × Bézier — 代数求根 + 区间裁剪，重根与端点根判号</span><span class="st">下一步</span></div>
-        <div class="sm-row todo"><span class="idx">A3</span><span>Bézier × Bézier — 细分 + 包围盒隔离 + Newton 精修</span><span class="st">待做</span></div>
+        <div class="sm-row ok"><span class="idx">A2</span><span>Segment × Bézier — Sturm 根隔离 + Yun 重数判相切，端点根精确剥离，认证区间输出</span><span class="st">已落地</span></div>
+        <div class="sm-row todo"><span class="idx">A3</span><span>Bézier × Bézier — 细分 + 包围盒隔离 + Newton 精修</span><span class="st">下一步</span></div>
         <div class="sm-row todo"><span class="idx">B</span><span>约束求解器 — 最小闭包 LM + SVD 或封装 libslvs；验收含分支手性不翻转</span><span class="st">待做</span></div>
         <div class="sm-row todo"><span class="idx">C</span><span>2D 布尔装配 + sketch.json 重放 — 交点事件带来源与参数，拒绝容差聚类</span><span class="st">待做</span></div>
       </div>
@@ -328,7 +332,7 @@ footer a:hover{color:var(--seal);border-color:var(--seal)}
   <div class="pillar"><span class="p-no">PILLAR 01</span>
     <h3>预言机先于内核 + 变异自审</h3>
     <p>算子代码未动，黄金预测集先行。对验证台自身注入符号翻转、分母取错、守卫删除等变异，捕获率 100% 才允许准入。存活变异先查测试写虚，再查实现。</p>
-    <div class="p-meta">mutation kill rate = 21/21 · .pyc 复用坑已固化为回归断言</div>
+    <div class="p-meta">mutation kill rate = 24/24 · .pyc 复用坑已固化为回归断言</div>
   </div>
   <div class="pillar"><span class="p-no">PILLAR 02</span>
     <h3>四层证据链</h3>
@@ -368,12 +372,13 @@ footer a:hover{color:var(--seal);border-color:var(--seal)}
   <div class="note"><span class="n-tag">2026-11-09 · ORACLE</span><b>Boehm 分母抄错</b>：α 分母按记忆写成 U[i+p+1]−U[i]，几何不变性 oracle 当场判红。正确分母 U[i+p]−U[i] 已固化为解析反例与变异项。</div>
   <div class="note"><span class="n-tag">2026-11-09 / 11-18 · MUTATION</span><b>两次存活变异</b>：守卫被绕过后落入下游兜底异常，测试只匹配宽泛消息仍然通过。断言收紧到守卫自己的消息后被杀——先怀疑测试写虚。</div>
   <div class="note"><span class="n-tag">2026-11-09 · RUNTIME</span><b>.pyc 复用坑</b>：等长变异同秒恢复，CPython (mtime,size) 校验复用变异后字节码——磁盘已恢复、行为仍坏。禁用字节码写入 + 清除 .pyc 已成硬纪律。</div>
-  <div class="note"><span class="n-tag">2026-11-20 · STATIC + AUDIT</span><b>SC005 首次实战拦截</b>跨算子私有 import；变异审计同时证明 h²&lt;0 防御守卫是不可达死代码（分类已在有理数上保证 h²≥0）——删除并注释推导。</div>
+  <div class="note"><span class="n-tag">2026-11-20 · STATIC + AUDIT</span><b>SC005 首次实战拦截</b>跨算子私有 import；变异审计证明 h²&lt;0 防御守卫是不可达死代码（分类已在有理数上保证 h²≥0）——删除并注释推导。</div>
+  <div class="note"><span class="n-tag">2026-11-20 · A2 AUDIT</span><b>不可观察的 gcd 快路径</b>：线段×Bézier 里「曲线恰过线段端点」的 gcd 识别，变异审计证明跳过后行为完全等价（触界由闭包接受、变号由细化收敛）——按死代码纪律删除。另一存活变异暴露 miss 测试没覆盖 rmin&gt;d² 早退，补「有根但 s 全在线段外」变体后捕获。</div>
 </div>
 
 <footer>
   <div>
-    X2CAD-RM-001 · v0.3 · 2026-11-20<br>
+    X2CAD-RM-001 · v0.4 · 2026-11-20<br>
     决策记录：ADR-0001 范围纪律 / 0002 P0 验证台 / 0003 派生谱系 / 0004 确定性 ≠ TNP
   </div>
   <div>
