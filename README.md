@@ -3,9 +3,9 @@
 **把几何内核的“经验玄学”，变成可形式化验证、可变异自审、可跨内核对拍的工程判据。**
 
 ![Python](https://img.shields.io/badge/python-3.9%2B-blue)
-![Tests](https://img.shields.io/badge/tests-289%20passed-brightgreen)
-![Conformance](https://img.shields.io/badge/conformance-65%20cases-blue)
-![Mutation](https://img.shields.io/badge/mutation-21%2F21%20killed-brightgreen)
+![Tests](https://img.shields.io/badge/tests-311%20passed-brightgreen)
+![Conformance](https://img.shields.io/badge/conformance-74%20cases-blue)
+![Mutation](https://img.shields.io/badge/mutation-24%2F24%20killed-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
 > 仓库地址：<https://github.com/DMithrandir/x2CAD>
@@ -22,7 +22,7 @@ AI 与 CAD 交叉领域的瓶颈，已经从**“能不能生成几何”**转�
 
 **本项目的定位不是重写一遍大而全的 [OCCT](https://occt3d.com/open-cascade-technology/)，而是补齐开源 CAD 与 AI-for-CAD 缺失的“判据层 + 最小可证明内核切片”**：以 **预言机先于内核（Oracle-First）** 为铁律，将退化五族语料、四层证据链、变异自审与支撑确定性重放/单步派生寻址的**实体引用契约（`EntityRef`；参数化 TNP 不在本层承诺，见 [ADR-0004](docs/adr/0004-determinism-vs-tnp.md)）** 打造为可复用的公开基础设施。
 
-当前状态（2026-11-20）：N1 曲线算子、N2 节点操作、P0 验证台与 `EntityRef` 契约（含分裂/合并谱系）已落地；P1 解析图元通道三条闭式组合全部落地（线段×线段、线段×圆弧、圆×圆），判别式/根轴/弧段过滤全部有理数精确判号。289 例 oracle 测试全绿，`python -m verify` 门禁 PASS，变异捕获率 21/21。下一步：A2 直线-Bézier 求交。
+当前状态（2026-11-20）：N1 曲线算子、N2 节点操作、P0 验证台与 `EntityRef` 契约（含分裂/合并谱系）已落地；P1 解析求交三通道落地后，多项式通道开启——`line_bezier_intersection`（A2）进入内核：根个数/隔离/重数由 Sturm + 无平方分解精确判定，相切给重数、端点根精确剥离、认证区间输出。新增数值基元 `primitives/polynomial.py`（精确多项式机械）。311 例 oracle 测试全绿，`python -m verify` 门禁 PASS，变异捕获率 24/24。下一步：A3 Bézier×Bézier。
 
 ---
 
@@ -72,7 +72,7 @@ AI 与 CAD 交叉领域的瓶颈，已经从**“能不能生成几何”**转�
 | 阶段 | 模块范围 | 为什么处于该依赖位置 | 硬性验收线（Acceptance Gate） | 状态 |
 | :--- | :--- | :--- | :--- | :--- |
 | **N1** | **曲线基础算子**<br>（求值、解析求导、插值） | 占 CAD 内核功能面积 ~5%，但属于唯一能被 100% 形式化证明正确的纯数学基座 | 解析真值 / 差分对拍 / 不变量全绿；边界重数与端点插值零漂移 | **Done**（2026-08） |
-| **#1 (P0)** | **白盒验证台 + 预言机变异自审** | 算子未大规模入核前，必须先审计裁判本身；此时构建成本最低、后续复利最高 | 静态检查 0 findings；覆盖率 0 缺口；conformance 0 失败；变异捕获率 **21/21 = 100%** | **Done**（2026-11-09） |
+| **#1 (P0)** | **白盒验证台 + 预言机变异自审** | 算子未大规模入核前，必须先审计裁判本身；此时构建成本最低、后续复利最高 | 静态检查 0 findings；覆盖率 0 缺口；conformance 0 失败；变异捕获率 **24/24 = 100%** | **Done**（2026-11-09） |
 | **#2** | **`EntityRef` 契约**<br>（指针引用 + 重编号 + 谱系） | 一旦布尔运算动工，无契约的引用机制必将全盘返工 | 同一脚本重放两遍 id 序列严格一致；Tombstone 引用 100% 报错；1-to-N / N-to-1 谱系可解析 | **Done**（2026-11-16，v0.2） |
 | **#4 (N2)** | **节点操作与曲线微分几何**<br>（Boehm、升阶、分裂、弧长/切矢/曲率、2D 圆角） | 纯数学叶子分支收口，为参数域求交打断提供无损几何操作 | 四路 Oracle 全部通过；节点插入几何误差 < 1e-12（测试钉住） | **Done**（2026-11-09） |
 | **#3 (P1)** | **二维完整垂直切片**<br>（2D 约束求解 + 2D 曲线布尔） | 二维是唯一能由个人将“所有算子与拓扑装配都做对”的完整闭环（参考 [SolveSpace](https://solvespace.com/) / [arXiv:1006.1126](https://arxiv.org/abs/1006.1126)） | 约束残差 < 1e-10；多边形层与 [Shapely](https://shapely.readthedocs.io/) 对拍一致，曲线层通过合成解析解对拍 | **In Progress**（P1-A1 线段求交已落地；A2/A3 进行中） |
@@ -103,13 +103,14 @@ x2cad/
 │   ├── fillet_2d/                 # 二维相切圆角
 │   ├── line_line_intersection/    # 线段求交（精确有理数判定，含共线重叠）
 │   ├── segment_arc_intersection/  # 线段-圆弧求交（判别式精确判号 + 弧段过滤）
-│   └── arc_arc_intersection/      # 圆-圆求交（根轴法 + 六分类 + 弧段过滤）
+│   ├── arc_arc_intersection/      # 圆-圆求交（根轴法 + 六分类 + 弧段过滤）
+│   └── line_bezier_intersection/  # 线段-Bézier 求交（Sturm 根隔离 + 重数判相切）
 ├── kernel/                        # 公共层：entity_ref.py（引用契约 + 派生谱系，无拓扑变异）
 ├── verify/                        # 验证台：invariants / analytic / robustness / static_check /
 │                                  # spec_check / conformance（cases/）/ mutation（audit/）/ evidence/
 ├── degeneracy/                    # 退化五族知识库：index.json + README（schema 与用法）
 ├── x2cad/                         # 流水线脚手架：内容寻址产物缓存
-├── tests/                         # 289 例 oracle 测试
+├── tests/                         # 311 例 oracle 测试
 ├── conftest.py                    # pytest 根目录锚点
 ├── pyproject.toml                 # 包元数据与 pytest 配置
 ├── CLAUDE.md                      # 项目路由与硬性范围纪律（协作入口）
@@ -167,9 +168,9 @@ conformance：47/47 cases，47/47 checks，证据 verify/evidence/report.json
 
 | 项 | 状态 |
 | :--- | :--- |
-| oracle 测试 | 289 例全绿（`tests/test_entity_ref.py` 26 例、`tests/test_line_line_intersection.py` 22 例、`tests/test_segment_arc_intersection.py` 18 例、`tests/test_arc_arc_intersection.py` 17 例） |
-| `python -m verify` | PASS：静态检查 0 findings、覆盖率 0 缺口、conformance 65/65 cases |
-| 变异自审 | 21/21 = 100% 捕获（`verify/audit/mutation_report.json`） |
+| oracle 测试 | 311 例全绿（含 `test_line_bezier_intersection.py` 21 例、`test_arc_arc_intersection.py` 17 例） |
+| `python -m verify` | PASS：静态检查 0 findings、覆盖率 0 缺口、conformance 74/74 cases |
+| 变异自审 | 24/24 = 100% 捕获（`verify/audit/mutation_report.json`） |
 | 退化语料 | 17 条，覆盖 T/C/S/I/N 五族，零死链 |
 | Tier 3 外部对拍 | **未启用**：缺 `shapely` / `manifold3d` / `trimesh`；接入口径见 `docs/specs/cad-operator-conformance.md` §10 |
 | Tier 5 过程化重放 | **未实现**：需要 P1 的 sketch/extrude 链；`EntityRef` 契约已为其提供引用基础 |

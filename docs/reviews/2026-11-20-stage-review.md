@@ -112,7 +112,14 @@ Exact Constructions 全程持有精确代数数，绝不中途退回 `float`。
   测试捕获）——删除并注释推导；"跳过内含守卫"变异由 `test_containment`
   的贴边内含用例捕获（守卫被跳过时 math.sqrt 收到负数抛 ValueError）。
   当前 289 例测试、65 conformance、21/21 变异。
-- [ ] **A2/A3**：直线-Bézier、Bézier-Bézier 求交（解析通道完成后的下一批）。
+- [x] **实现 A2 Segment×Bézier**（2026-11-20 追加）：新数值基元
+  `primitives/polynomial.py`（Bernstein↔幂基、gcd、Yun 无平方分解、Sturm 隔离）；
+  `operators/line_bezier_intersection`：根个数/隔离/重数精确判定，相切=重数≥2，
+  端点根精确剥离，认证区间输出，共线退化返回 t 区间并集。21 例 oracle、9 条
+  conformance、4 个新变异。两个发现：gcd 边界快路径变异审计证明行为不可观察
+  （死代码，删除）；FILTER_REJECT 存活暴露 miss 测试未覆盖 rmin>d2 早退，
+  补变体后捕获。当前 311 例测试、74 conformance、24/24 变异。
+- [ ] **A3**：Bézier×Bézier 求交（细分 + 包围盒 + Newton，多项式通道收官）。
 - [ ] **TNP 设计**：特征历史锚点 + 邻接签名（独立 ADR，不进 P1）。
 - [ ] **脏几何修复 / 3D 深水区**：保持 Non-Goal，不排期。
 
@@ -122,9 +129,9 @@ Exact Constructions 全程持有精确代数数，绝不中途退回 `float`。
 
 | 项 | 值 |
 |:--|:--|
-| oracle 测试 | 289 例全绿 |
-| conformance | 65/65 cases |
-| 变异自审 | 21/21 = 100% |
+| oracle 测试 | 311 例全绿 |
+| conformance | 74/74 cases |
+| 变异自审 | 24/24 = 100% |
 | 静态检查 | 0 findings |
 | 门禁 | `python -m verify` PASS |
 

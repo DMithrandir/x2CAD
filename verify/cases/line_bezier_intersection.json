@@ -1,0 +1,489 @@
+{
+  "operator": "line_bezier_intersection",
+  "cases": [
+    {
+      "case_id": "line_bezier_intersection.transcending_two_points",
+      "module": "operators.line_bezier_intersection.impl",
+      "function": "segment_bezier_intersection_report",
+      "args": [
+        [
+          -2.0,
+          0.0
+        ],
+        [
+          2.0,
+          0.0
+        ],
+        [
+          [
+            0.0,
+            -1.0
+          ],
+          [
+            1.0,
+            2.0
+          ],
+          [
+            2.0,
+            -1.0
+          ]
+        ]
+      ],
+      "checks": [
+        {
+          "kind": "close",
+          "expected": {
+            "kind": "points",
+            "t_intervals": [],
+            "hits": [
+              {
+                "t": 0.2113248654051871,
+                "s": 0.6056624327025936,
+                "tangent": false,
+                "multiplicity": 1,
+                "point": [
+                  0.42264973081037427,
+                  0.0
+                ],
+                "t_enclosure": [
+                  0.2113248654051871,
+                  0.2113248654051871
+                ]
+              },
+              {
+                "t": 0.7886751345948129,
+                "s": 0.8943375672974064,
+                "tangent": false,
+                "multiplicity": 1,
+                "point": [
+                  1.5773502691896257,
+                  1.1102230246251565e-16
+                ],
+                "t_enclosure": [
+                  0.7886751345948129,
+                  0.7886751345948129
+                ]
+              }
+            ]
+          },
+          "rel_tol": 1e-12
+        }
+      ],
+      "tags": [
+        "analytic",
+        "basic"
+      ]
+    },
+    {
+      "case_id": "line_bezier_intersection.tangency_quadratic",
+      "module": "operators.line_bezier_intersection.impl",
+      "function": "segment_bezier_intersection_report",
+      "args": [
+        [
+          -2.0,
+          0.0
+        ],
+        [
+          2.0,
+          0.0
+        ],
+        [
+          [
+            0.0,
+            -1.0
+          ],
+          [
+            1.0,
+            1.0
+          ],
+          [
+            2.0,
+            -1.0
+          ]
+        ]
+      ],
+      "checks": [
+        {
+          "kind": "close",
+          "expected": {
+            "kind": "point",
+            "t_intervals": [],
+            "hits": [
+              {
+                "t": 0.5,
+                "s": 0.75,
+                "point": [
+                  1.0,
+                  0.0
+                ],
+                "tangent": true,
+                "multiplicity": 2,
+                "t_enclosure": [
+                  0.5,
+                  0.5
+                ]
+              }
+            ]
+          },
+          "rel_tol": 1e-12
+        }
+      ],
+      "tags": [
+        "degeneracy",
+        "T-family"
+      ]
+    },
+    {
+      "case_id": "line_bezier_intersection.cubic_single_crossing",
+      "module": "operators.line_bezier_intersection.impl",
+      "function": "segment_bezier_intersection_report",
+      "args": [
+        [
+          1.0,
+          -2.0
+        ],
+        [
+          1.0,
+          2.0
+        ],
+        [
+          [
+            0.0,
+            -1.0
+          ],
+          [
+            1.0,
+            1.0
+          ],
+          [
+            2.0,
+            -1.0
+          ],
+          [
+            3.0,
+            1.0
+          ]
+        ]
+      ],
+      "checks": [
+        {
+          "kind": "close",
+          "expected": {
+            "kind": "point",
+            "t_intervals": [],
+            "hits": [
+              {
+                "t": 0.3333333333333333,
+                "s": 0.49074074074074076,
+                "point": [
+                  1.0,
+                  -0.03703703703703708
+                ],
+                "tangent": false,
+                "multiplicity": 1,
+                "t_enclosure": [
+                  0.3333333333333333,
+                  0.3333333333333333
+                ]
+              }
+            ]
+          },
+          "rel_tol": 1e-12
+        }
+      ],
+      "tags": [
+        "analytic",
+        "cubic"
+      ]
+    },
+    {
+      "case_id": "line_bezier_intersection.miss",
+      "module": "operators.line_bezier_intersection.impl",
+      "function": "segment_bezier_intersection_report",
+      "args": [
+        [
+          -2.0,
+          2.0
+        ],
+        [
+          2.0,
+          2.0
+        ],
+        [
+          [
+            0.0,
+            -1.0
+          ],
+          [
+            1.0,
+            2.0
+          ],
+          [
+            2.0,
+            -1.0
+          ]
+        ]
+      ],
+      "checks": [
+        {
+          "kind": "close",
+          "expected": {
+            "kind": "none",
+            "hits": [],
+            "t_intervals": []
+          },
+          "rel_tol": 1e-12
+        }
+      ],
+      "tags": [
+        "analytic",
+        "classification"
+      ]
+    },
+    {
+      "case_id": "line_bezier_intersection.curve_endpoint_on_segment",
+      "module": "operators.line_bezier_intersection.impl",
+      "function": "segment_bezier_intersection_report",
+      "args": [
+        [
+          -1.0,
+          -1.0
+        ],
+        [
+          3.0,
+          -1.0
+        ],
+        [
+          [
+            0.0,
+            -1.0
+          ],
+          [
+            1.0,
+            2.0
+          ],
+          [
+            2.0,
+            -1.0
+          ]
+        ]
+      ],
+      "checks": [
+        {
+          "kind": "close",
+          "expected": {
+            "kind": "point",
+            "t_intervals": [],
+            "hits": [
+              {
+                "t": 0.0,
+                "s": 0.25,
+                "tangent": false,
+                "multiplicity": 1,
+                "point": [
+                  0.0,
+                  -1.0
+                ],
+                "t_enclosure": [
+                  0.0,
+                  0.0
+                ]
+              }
+            ]
+          },
+          "rel_tol": 1e-12
+        }
+      ],
+      "tags": [
+        "degeneracy",
+        "T-family",
+        "endpoint"
+      ]
+    },
+    {
+      "case_id": "line_bezier_intersection.endpoint_tangency_cubic",
+      "module": "operators.line_bezier_intersection.impl",
+      "function": "segment_bezier_intersection_report",
+      "args": [
+        [
+          -1.0,
+          0.0
+        ],
+        [
+          4.0,
+          0.0
+        ],
+        [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            0.0
+          ],
+          [
+            2.0,
+            3.0
+          ],
+          [
+            3.0,
+            0.0
+          ]
+        ]
+      ],
+      "checks": [
+        {
+          "kind": "close",
+          "expected": {
+            "kind": "point",
+            "t_intervals": [],
+            "hits": [
+              {
+                "t": 0.0,
+                "s": 0.2,
+                "tangent": true,
+                "multiplicity": 2,
+                "point": [
+                  0.0,
+                  0.0
+                ],
+                "t_enclosure": [
+                  0.0,
+                  0.0
+                ]
+              }
+            ]
+          },
+          "rel_tol": 1e-12
+        }
+      ],
+      "tags": [
+        "degeneracy",
+        "T-family",
+        "endpoint"
+      ]
+    },
+    {
+      "case_id": "line_bezier_intersection.collinear_partial",
+      "module": "operators.line_bezier_intersection.impl",
+      "function": "segment_bezier_intersection_report",
+      "args": [
+        [
+          -1.0,
+          0.0
+        ],
+        [
+          2.0,
+          0.0
+        ],
+        [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            1.5,
+            0.0
+          ],
+          [
+            3.0,
+            0.0
+          ]
+        ]
+      ],
+      "checks": [
+        {
+          "kind": "close",
+          "expected": {
+            "kind": "collinear",
+            "hits": [],
+            "t_intervals": [
+              [
+                0.0,
+                0.6666666666666666
+              ]
+            ]
+          },
+          "rel_tol": 1e-12
+        }
+      ],
+      "tags": [
+        "degeneracy",
+        "C-family"
+      ]
+    },
+    {
+      "case_id": "line_bezier_intersection.zero_length_raises",
+      "module": "operators.line_bezier_intersection.impl",
+      "function": "intersect_segment_bezier",
+      "args": [
+        [
+          1.0,
+          1.0
+        ],
+        [
+          1.0,
+          1.0
+        ],
+        [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            1.0,
+            1.0
+          ],
+          [
+            2.0,
+            0.0
+          ]
+        ]
+      ],
+      "checks": [
+        {
+          "kind": "raises",
+          "exception": "DomainError",
+          "match": "退化为点"
+        }
+      ],
+      "tags": [
+        "degeneracy",
+        "S-family"
+      ]
+    },
+    {
+      "case_id": "line_bezier_intersection.too_few_ctrl_raises",
+      "module": "operators.line_bezier_intersection.impl",
+      "function": "intersect_segment_bezier",
+      "args": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          1.0,
+          0.0
+        ],
+        [
+          [
+            0.0,
+            0.0
+          ]
+        ]
+      ],
+      "checks": [
+        {
+          "kind": "raises",
+          "exception": "DomainError",
+          "match": "至少需要两个控制点"
+        }
+      ],
+      "tags": [
+        "degeneracy",
+        "S-family"
+      ]
+    }
+  ]
+}

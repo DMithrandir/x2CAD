@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-20T03:52:04+00:00",
+  "generated_at": "2026-11-20T05:52:06+00:00",
   "root": "C:\\Users\\desha\\Desktop\\CAD",
   "static": {
     "findings": 0,
@@ -9,10 +9,10 @@
     "missing_operators": []
   },
   "conformance": {
-    "cases": 65,
-    "cases_passed": 65,
-    "checks": 65,
-    "checks_passed": 65,
+    "cases": 74,
+    "cases_passed": 74,
+    "checks": 74,
+    "checks_passed": 74,
     "checks_failed": 0,
     "by_operator": {
       "arc_arc_intersection": {
@@ -45,6 +45,10 @@
       },
       "knot_insertion": {
         "checks": 5,
+        "failed": 0
+      },
+      "line_bezier_intersection": {
+        "checks": 9,
         "failed": 0
       },
       "line_line_intersection": {

@@ -1,7 +1,7 @@
 {
   "summary": {
-    "total": 21,
-    "killed": 21,
+    "total": 24,
+    "killed": 24,
     "survived": 0,
     "capture_rate": 1.0
   },
@@ -149,6 +149,27 @@
     {
       "mutant_id": "ARC_ARC_INTERNAL_CONTAINED",
       "description": "跳过内含守卫：内含被误交给根轴求交（math.sqrt 收到负数抛 ValueError）",
+      "killed": true,
+      "returncode": 1,
+      "detail": "!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!"
+    },
+    {
+      "mutant_id": "LINE_BEZIER_ENDPOINT_STRIP",
+      "description": "跳过 t=0 端点根剥离：曲线起点接触被吞掉",
+      "killed": true,
+      "returncode": 1,
+      "detail": "!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!"
+    },
+    {
+      "mutant_id": "LINE_BEZIER_TANGENCY_MULT",
+      "description": "相切判定阈值从重数 2 提到 3：二重切点不再标记 tangent",
+      "killed": true,
+      "returncode": 1,
+      "detail": "!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!"
+    },
+    {
+      "mutant_id": "LINE_BEZIER_FILTER_REJECT",
+      "description": "跳过线段过滤的相离分支：有根但 s 全在线段外的 miss 必须走 rmin>d2 早退，细化收敛抛 DomainError（而非静默 none）",
       "killed": true,
       "returncode": 1,
       "detail": "!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!"

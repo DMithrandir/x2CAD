@@ -42,10 +42,10 @@
 | 1 | Segment × Segment | 有理数行列式 | 共线重叠、端点接触、零长 | **已落地**（`line_line_intersection`） |
 | 2 | Segment × Circle/Arc | 代入二次方程；判别式精确判号；根过滤到线段与弧段 | 相切（重根）、端点根、弧端包含、零长线段 | **已落地**（`segment_arc_intersection`；弧段过滤用起终向量叉积，见 §3.1） |
 | 3 | Circle/Arc × Circle/Arc | 圆心距 + 根轴；判别式精确判号；角度过滤 | 内切/外切、同心、重合、包含 | **已落地**（`arc_arc_intersection`；六分类 + 根轴交点，弧段过滤复用 #2 的 `arc_contains_dir`） |
-| 4 | Segment × NURBS | 代数求根 + 区间裁剪（A2） | 重根、端点根 | 待实现 |
-| 5 | NURBS × NURBS | 细分 + 包围盒 + Newton（A3） | 横截/相切/重合 | 待实现 |
+| 4 | Segment × Bézier | 叉积多项式 + Sturm 根隔离 + Yun 重数（`primitives/polynomial.py`） | 相切重根、端点根、共线退化、认证区间 | **已落地**（`line_bezier_intersection`；判定精确、坐标浮点+认证区间） |
+| 5 | Bézier × Bézier | 细分 + 包围盒 + Newton（A3） | 横截/相切/重合 | 待实现 |
 
-前三条是闭式代数，**通道已完成**；4/5 的通用通道只处理自由曲线。
+#1–#4 已落地（#4 开启多项式通道）；#5 为通用通道的收官。
 
 ### 3.1 弧段包含的已实现口径（矩阵 #2 的实测决策）
 

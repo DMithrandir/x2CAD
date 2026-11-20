@@ -1,0 +1,43 @@
+{
+  "slug": "line_bezier_intersection",
+  "name": "2D 线段-Bézier 求交（精确根隔离 + 重数判相切）",
+  "category": "curve",
+  "dim": "2D",
+  "version": "0.1.0",
+  "source": "线段代入 Bernstein 曲线的叉积多项式；根个数/隔离/重数由 primitives/polynomial 的 Sturm + Yun 无平方分解精确判定（analytic-primitives.md §3-4 / A2）",
+  "signature": {
+    "inputs": {
+      "a": "线段起点 (x, y)",
+      "b": "线段终点 (x, y)",
+      "ctrl": "Bézier 控制点序列（n = len−1 ≥ 1）"
+    },
+    "outputs": [
+      "BezierSegmentIntersection(kind ∈ {none, point, points, collinear})",
+      "hits: [{t, s, point, tangent, multiplicity, t_enclosure}]，按 t 升序",
+      "t_enclosure: 认证区间（真根必在其中，宽度 ≤ 2^-60 级别）",
+      "collinear: t_intervals 为曲线落在线段上的 t 区间并集"
+    ]
+  },
+  "preconditions": [
+    "线段长度非零；控制点 ≥ 2 且坐标有限",
+    "根的个数/隔离/重数判定全部在有理数上（Sturm + 无平方分解）",
+    "相切 = 重数 ≥ 2（含尖点 C'=0）；端点根用精确剥离，不做容差猜测"
+  ],
+  "invariants": [
+    "每个交点的 point 用 de Casteljau(t) 回代一致；s 与线段参数回代一致",
+    "t, s ∈ [0,1]；hits 按 t 升序",
+    "重根 tangent=True 且 multiplicity 来自无平方分解的精确重数",
+    "认证区间 [t_lo, t_hi] 包含真根（t ∈ [lo,hi]）",
+    "线段端点接触（s=0/1）由 gcd(p, r) / gcd(p, r−|d|²) 精确识别",
+    "整体平移/缩放不改变 kind、t、重数与 tangent 标记"
+  ],
+  "degeneracy_branches": [
+    {"family": "T", "trigger": "p 有重根（判别式/无平方分解给出重数 ≥ 2）", "action": "RESULT: tangent=True（相切或尖点接触）"},
+    {"family": "T", "trigger": "端点根 t=0/1 或线段端点接触 s=0/1", "action": "RESULT: 闭集保留，不吞根"},
+    {"family": "C", "trigger": "p ≡ 0（曲线整体在支撑直线上）", "action": "RESULT: kind=collinear，返回 t 区间并集"},
+    {"family": "S", "trigger": "线段长度为零 / 控制点不足 / 非有限坐标", "action": "FAIL: DomainError"},
+    {"family": "N", "trigger": "大坐标偏移（尺度悬殊）", "action": "EXACT: Fraction 判定不受尺度影响；仅输出坐标落浮点"}
+  ],
+  "oracle_tests": "tests/test_line_bezier_intersection.py（解析双根、单交点三次、相切重数、端点根、认证区间、共线全/部分重叠、大坐标、退化拒绝）",
+  "depends_on": []
+}

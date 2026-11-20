@@ -182,6 +182,33 @@
       "replace": "    if False:\n        return \"none\", (), True",
       "tests": ["tests/test_arc_arc_intersection.py::test_containment"],
       "description": "跳过内含守卫：内含被误交给根轴求交（math.sqrt 收到负数抛 ValueError）"
+    },
+    {
+      "id": "LINE_BEZIER_ENDPOINT_STRIP",
+      "file": "operators/line_bezier_intersection/impl.py",
+      "find": "    rest, m0 = _strip_endpoint_root(p_pow, Fraction(0))",
+      "replace": "    rest, m0 = _strip_endpoint_root(p_pow, Fraction(0)) if False else (p_pow, 0)",
+      "tests": ["tests/test_line_bezier_intersection.py::test_curve_endpoint_on_segment"],
+      "description": "跳过 t=0 端点根剥离：曲线起点接触被吞掉"
+    },
+    {
+      "id": "LINE_BEZIER_TANGENCY_MULT",
+      "file": "operators/line_bezier_intersection/impl.py",
+      "find": "        \"tangent\": mult >= 2,",
+      "replace": "        \"tangent\": mult >= 3,",
+      "tests": ["tests/test_line_bezier_intersection.py::test_tangency_multiplicity_two"],
+      "description": "相切判定阈值从重数 2 提到 3：二重切点不再标记 tangent"
+    },
+    {
+      "id": "LINE_BEZIER_FILTER_REJECT",
+      "file": "operators/line_bezier_intersection/impl.py",
+      "find": "        if rmax < 0 or rmin > d2:\n            return None                      # 整段投影在线段外",
+      "replace": "        if False:\n            return None                      # 整段投影在线段外",
+      "tests": [
+        "tests/test_line_bezier_intersection.py::test_miss",
+        "tests/test_line_bezier_intersection.py::test_miss_with_roots_but_segment_filter_rejects"
+      ],
+      "description": "跳过线段过滤的相离分支：有根但 s 全在线段外的 miss 必须走 rmin>d2 早退，细化收敛抛 DomainError（而非静默 none）"
     }
   ]
 }
