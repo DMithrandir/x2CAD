@@ -1,0 +1,43 @@
+{
+  "slug": "arc_arc_intersection",
+  "name": "2D 圆弧/圆-圆弧/圆求交（根轴法 + 精确六分类）",
+  "category": "curve",
+  "dim": "2D",
+  "version": "0.1.0",
+  "source": "两圆根轴法（radical axis）；分类判号沿用 analytic-primitives.md §3-3 与『浮点无损转有理数』口径；弧段过滤复用 segment_arc_intersection 的向量叉积判定",
+  "signature": {
+    "inputs": {
+      "c1": "圆 1 圆心 (x, y)",
+      "r1": "圆 1 半径（正有限）",
+      "c2": "圆 2 圆心 (x, y)",
+      "r2": "圆 2 半径（正有限）",
+      "arc": "Arc2D 形式（intersect_arc_arc / arc_arc_intersection 的 start_angle + sweep）"
+    },
+    "outputs": [
+      "kind ∈ {none, point, points, overlap}",
+      "hits: [{point(float), theta1, theta2, tangent}]，按 theta1 升序",
+      "contained: 内含时 True",
+      "overlap: 同心同半径（重合），无交点字段"
+    ]
+  },
+  "preconditions": [
+    "半径正且有限；圆心为有限二维坐标",
+    "分类判号（d² vs (r1±r2)²）全部在有理数上判定，d² 精确、d 仅在除法中以浮点出现",
+    "弧段过滤沿用 segment_arc_intersection §3.1 的向量口径"
+  ],
+  "invariants": [
+    "每个交点同时在两圆上（距离 = 对应半径，≤ 1e-9）",
+    "外切/内切给单点 tangent=True；两交点按 theta1 升序且 tangent=False",
+    "d=0 且 r1=r2 → overlap；d=0 且 r1≠r2 或 d²<(r1−r2)² → none+contained=True",
+    "外离 → none+contained=False",
+    "弧段过滤后交点仍在两弧的扇形内（向量叉积判定，端点属闭弧）"
+  ],
+  "degeneracy_branches": [
+    {"family": "T", "trigger": "d = r1+r2（外切）或 d = |r1−r2|（内切）", "action": "RESULT: 单交点 tangent=True"},
+    {"family": "C", "trigger": "同心同半径（重合）", "action": "RESULT: kind=overlap（闭曲面重叠不是交点）"},
+    {"family": "C", "trigger": "内含（d < |r1−r2| 或同心不同半径）", "action": "RESULT: kind=none, contained=True"},
+    {"family": "S", "trigger": "半径非正 / 圆心非有限", "action": "FAIL: DomainError"}
+  ],
+  "oracle_tests": "tests/test_arc_arc_intersection.py（六分类、根轴坐标 off-center、对角布局、弧段过滤、JSON 入口、退化拒绝、排序与 tangent 一致性）",
+  "depends_on": ["segment_arc_intersection"]
+}

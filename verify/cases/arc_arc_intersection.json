@@ -1,0 +1,205 @@
+{
+  "operator": "arc_arc_intersection",
+  "cases": [
+    {
+      "case_id": "arc_arc_intersection.two_points",
+      "module": "operators.arc_arc_intersection.impl",
+      "function": "arc_arc_intersection_report",
+      "args": [[0.0, 0.0], 2.0, [3.0, 0.0], 2.0],
+      "checks": [
+        {
+          "kind": "close",
+          "expected": {
+            "kind": "points",
+            "contained": false,
+            "hits": [
+              {
+                "point": [1.5, -1.3228756555322954],
+                "theta1": -0.7227342478134157,
+                "theta2": -2.4188584057763776,
+                "tangent": false
+              },
+              {
+                "point": [1.5, 1.3228756555322954],
+                "theta1": 0.7227342478134157,
+                "theta2": 2.4188584057763776,
+                "tangent": false
+              }
+            ]
+          },
+          "rel_tol": 1e-12
+        }
+      ],
+      "tags": ["analytic", "basic"]
+    },
+    {
+      "case_id": "arc_arc_intersection.external_tangency",
+      "module": "operators.arc_arc_intersection.impl",
+      "function": "arc_arc_intersection_report",
+      "args": [[0.0, 0.0], 1.0, [2.0, 0.0], 1.0],
+      "checks": [
+        {
+          "kind": "close",
+          "expected": {
+            "kind": "point",
+            "contained": false,
+            "hits": [
+              {"point": [1.0, 0.0], "theta1": 0.0, "theta2": 3.141592653589793, "tangent": true}
+            ]
+          },
+          "rel_tol": 1e-12
+        }
+      ],
+      "tags": ["degeneracy", "T-family"]
+    },
+    {
+      "case_id": "arc_arc_intersection.internal_tangency",
+      "module": "operators.arc_arc_intersection.impl",
+      "function": "arc_arc_intersection_report",
+      "args": [[0.0, 0.0], 3.0, [2.0, 0.0], 1.0],
+      "checks": [
+        {
+          "kind": "close",
+          "expected": {
+            "kind": "point",
+            "contained": false,
+            "hits": [
+              {"point": [3.0, 0.0], "theta1": 0.0, "theta2": 0.0, "tangent": true}
+            ]
+          },
+          "rel_tol": 1e-12
+        }
+      ],
+      "tags": ["degeneracy", "T-family"]
+    },
+    {
+      "case_id": "arc_arc_intersection.separate",
+      "module": "operators.arc_arc_intersection.impl",
+      "function": "arc_arc_intersection_report",
+      "args": [[0.0, 0.0], 1.0, [5.0, 0.0], 1.0],
+      "checks": [
+        {
+          "kind": "close",
+          "expected": {"kind": "none", "contained": false, "hits": []},
+          "rel_tol": 1e-12
+        }
+      ],
+      "tags": ["analytic", "classification"]
+    },
+    {
+      "case_id": "arc_arc_intersection.containment",
+      "module": "operators.arc_arc_intersection.impl",
+      "function": "arc_arc_intersection_report",
+      "args": [[0.0, 0.0], 5.0, [1.0, 0.0], 1.0],
+      "checks": [
+        {
+          "kind": "close",
+          "expected": {"kind": "none", "contained": true, "hits": []},
+          "rel_tol": 1e-12
+        }
+      ],
+      "tags": ["degeneracy", "C-family"]
+    },
+    {
+      "case_id": "arc_arc_intersection.concentric_overlap",
+      "module": "operators.arc_arc_intersection.impl",
+      "function": "arc_arc_intersection_report",
+      "args": [[0.0, 0.0], 1.0, [0.0, 0.0], 1.0],
+      "checks": [
+        {
+          "kind": "close",
+          "expected": {"kind": "overlap", "contained": false, "hits": []},
+          "rel_tol": 1e-12
+        }
+      ],
+      "tags": ["degeneracy", "C-family"]
+    },
+    {
+      "case_id": "arc_arc_intersection.concentric_containment",
+      "module": "operators.arc_arc_intersection.impl",
+      "function": "arc_arc_intersection_report",
+      "args": [[0.0, 0.0], 2.0, [0.0, 0.0], 1.0],
+      "checks": [
+        {
+          "kind": "close",
+          "expected": {"kind": "none", "contained": true, "hits": []},
+          "rel_tol": 1e-12
+        }
+      ],
+      "tags": ["degeneracy", "C-family"]
+    },
+    {
+      "case_id": "arc_arc_intersection.off_axis_radical_line",
+      "module": "operators.arc_arc_intersection.impl",
+      "function": "arc_arc_intersection_report",
+      "args": [[1.0, 2.0], 5.0, [6.0, 2.0], 3.0],
+      "checks": [
+        {
+          "kind": "close",
+          "expected": {
+            "kind": "points",
+            "contained": false,
+            "hits": [
+              {
+                "point": [5.1, -0.8618176042508368],
+                "theta1": -0.609385308030795,
+                "theta2": -1.8754889808102944,
+                "tangent": false
+              },
+              {
+                "point": [5.1, 4.861817604250836],
+                "theta1": 0.6093853080307949,
+                "theta2": 1.8754889808102944,
+                "tangent": false
+              }
+            ]
+          },
+          "rel_tol": 1e-12
+        }
+      ],
+      "tags": ["analytic", "radical-axis"]
+    },
+    {
+      "case_id": "arc_arc_intersection.zero_radius_raises",
+      "module": "operators.arc_arc_intersection.impl",
+      "function": "arc_arc_intersection_report",
+      "args": [[0.0, 0.0], 0.0, [1.0, 0.0], 1.0],
+      "checks": [{"kind": "raises", "exception": "DomainError", "match": "半径"}],
+      "tags": ["degeneracy", "S-family"]
+    },
+    {
+      "case_id": "arc_arc_intersection.arc_filtered_two_to_one",
+      "module": "operators.arc_arc_intersection.impl",
+      "function": "arc_arc_intersection",
+      "args": [
+        [0.0, 0.0],
+        2.0,
+        0.0,
+        6.283185307179586,
+        [3.0, 0.0],
+        2.0,
+        1.5707963267948966,
+        1.2566370614359172
+      ],
+      "checks": [
+        {
+          "kind": "close",
+          "expected": {
+            "kind": "point",
+            "contained": false,
+            "hits": [
+              {
+                "point": [1.5, 1.3228756555322954],
+                "theta1": 0.7227342478134157,
+                "theta2": 2.4188584057763776,
+                "tangent": false
+              }
+            ]
+          },
+          "rel_tol": 1e-12
+        }
+      ],
+      "tags": ["analytic", "arc-filter"]
+    }
+  ]
+}

@@ -196,11 +196,11 @@ def arc_contains_angle_exact(arc: Arc2D, theta: float) -> bool:
     起终向量比较；本入口对给定角度先落到圆上坐标再走同一判定。
     """
     p = arc.point(theta)
-    return _arc_contains_point_dir(arc, (p[0] - arc.center[0], p[1] - arc.center[1]))
+    return arc_contains_dir(arc, (p[0] - arc.center[0], p[1] - arc.center[1]))
 
 
-def _arc_contains_point_dir(arc: Arc2D, w: Point) -> bool:
-    """判定从圆心出发的方向向量 ``w`` 是否落在闭弧扇形内。
+def arc_contains_dir(arc: Arc2D, w: Point) -> bool:
+    """判定从圆心出发的方向向量 ``w`` 是否落在闭弧扇形内（公共 API）。
 
     全程有理数叉积：``cross(start, w)`` 与 ``cross(w, end)`` 的符号决定
     ``w`` 是否在从 start 到 end 的（按 sweep 方向的）劣/优弧扇形内。
@@ -308,7 +308,7 @@ def intersect_segment_arc(
     kept = tuple(
         h
         for h in base.hits
-        if _arc_contains_point_dir(
+        if arc_contains_dir(
             arc, (h["point"][0] - arc.center[0], h["point"][1] - arc.center[1])
         )
     )

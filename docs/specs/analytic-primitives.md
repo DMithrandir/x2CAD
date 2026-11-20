@@ -1,9 +1,10 @@
 # 解析图元与求交矩阵（P1-A'，规格先行）
 
-> 版本 0.2.0 | 2026-11-20 | 状态：矩阵 #1、#2 已落地
+> 版本 0.3.0 | 2026-11-20 | 状态：矩阵 #1、#2、#3 已落地（闭式通道完成）
 > 关联：`docs/reviews/2026-11-20-stage-review.md` §2.3；
 > `operators/line_line_intersection/`（矩阵 #1）、
-> `operators/segment_arc_intersection/`（矩阵 #2）；
+> `operators/segment_arc_intersection/`（矩阵 #2）、
+> `operators/arc_arc_intersection/`（矩阵 #3）；
 > `docs/plans/2026-11-09-next-batch.md` §3 P1-A
 
 ---
@@ -40,11 +41,11 @@
 |:--|:--|:--|:--|:--|
 | 1 | Segment × Segment | 有理数行列式 | 共线重叠、端点接触、零长 | **已落地**（`line_line_intersection`） |
 | 2 | Segment × Circle/Arc | 代入二次方程；判别式精确判号；根过滤到线段与弧段 | 相切（重根）、端点根、弧端包含、零长线段 | **已落地**（`segment_arc_intersection`；弧段过滤用起终向量叉积，见 §3.1） |
-| 3 | Circle/Arc × Circle/Arc | 圆心距 + 根轴；判别式精确判号；角度过滤 | 内切/外切、同心、重合、包含 | 待实现 |
+| 3 | Circle/Arc × Circle/Arc | 圆心距 + 根轴；判别式精确判号；角度过滤 | 内切/外切、同心、重合、包含 | **已落地**（`arc_arc_intersection`；六分类 + 根轴交点，弧段过滤复用 #2 的 `arc_contains_dir`） |
 | 4 | Segment × NURBS | 代数求根 + 区间裁剪（A2） | 重根、端点根 | 待实现 |
 | 5 | NURBS × NURBS | 细分 + 包围盒 + Newton（A3） | 横截/相切/重合 | 待实现 |
 
-前三条是闭式代数，优先于 4/5；4/5 的通用通道只处理自由曲线。
+前三条是闭式代数，**通道已完成**；4/5 的通用通道只处理自由曲线。
 
 ### 3.1 弧段包含的已实现口径（矩阵 #2 的实测决策）
 

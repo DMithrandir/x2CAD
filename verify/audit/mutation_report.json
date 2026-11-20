@@ -1,7 +1,7 @@
 {
   "summary": {
-    "total": 18,
-    "killed": 18,
+    "total": 21,
+    "killed": 21,
     "survived": 0,
     "capture_rate": 1.0
   },
@@ -128,6 +128,27 @@
     {
       "mutant_id": "SEGMENT_ARC_ROOT_FILTER_BOUND",
       "description": "两交点的参数过滤用开区间：交点在线段端点处被丢弃",
+      "killed": true,
+      "returncode": 1,
+      "detail": "!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!"
+    },
+    {
+      "mutant_id": "ARC_ARC_TANGENCY_CLASS",
+      "description": "外切分类条件写成大于：切点被误判为相离",
+      "killed": true,
+      "returncode": 1,
+      "detail": "!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!"
+    },
+    {
+      "mutant_id": "ARC_ARC_RADICAL_HALF",
+      "description": "根轴足点距离公式丢掉因子 2（交点整体偏移）",
+      "killed": true,
+      "returncode": 1,
+      "detail": "!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!"
+    },
+    {
+      "mutant_id": "ARC_ARC_INTERNAL_CONTAINED",
+      "description": "跳过内含守卫：内含被误交给根轴求交（math.sqrt 收到负数抛 ValueError）",
       "killed": true,
       "returncode": 1,
       "detail": "!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!"

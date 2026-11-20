@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-19T17:10:12+00:00",
+  "generated_at": "2026-11-20T03:52:04+00:00",
   "root": "C:\\Users\\desha\\Desktop\\CAD",
   "static": {
     "findings": 0,
@@ -9,12 +9,16 @@
     "missing_operators": []
   },
   "conformance": {
-    "cases": 55,
-    "cases_passed": 55,
-    "checks": 55,
-    "checks_passed": 55,
+    "cases": 65,
+    "cases_passed": 65,
+    "checks": 65,
+    "checks_passed": 65,
     "checks_failed": 0,
     "by_operator": {
+      "arc_arc_intersection": {
+        "checks": 10,
+        "failed": 0
+      },
       "curve_eval": {
         "checks": 8,
         "failed": 0

@@ -158,6 +158,30 @@
       "replace": "        if 0 < t < 1:\n            x = pf[0] + t * d[0]\n            y = pf[1] + t * d[1]\n            hits.append(_hit(x, y, t, tangent=False))",
       "tests": ["tests/test_segment_arc_intersection.py::test_endpoint_root_is_kept"],
       "description": "两交点的参数过滤用开区间：交点在线段端点处被丢弃"
+    },
+    {
+      "id": "ARC_ARC_TANGENCY_CLASS",
+      "file": "operators/arc_arc_intersection/impl.py",
+      "find": "    if d2 == rsum * rsum:",
+      "replace": "    if d2 > rsum * rsum:",
+      "tests": ["tests/test_arc_arc_intersection.py::test_external_tangency"],
+      "description": "外切分类条件写成大于：切点被误判为相离"
+    },
+    {
+      "id": "ARC_ARC_RADICAL_HALF",
+      "file": "operators/arc_arc_intersection/impl.py",
+      "find": "    a = (d2 + r1f * r1f - r2f * r2f) / (2 * dd)  # C1 沿 w 到根轴足点的距离",
+      "replace": "    a = (d2 + r1f * r1f - r2f * r2f) / dd  # C1 沿 w 到根轴足点的距离",
+      "tests": ["tests/test_arc_arc_intersection.py::test_radical_axis_coordinates_off_center"],
+      "description": "根轴足点距离公式丢掉因子 2（交点整体偏移）"
+    },
+    {
+      "id": "ARC_ARC_INTERNAL_CONTAINED",
+      "file": "operators/arc_arc_intersection/impl.py",
+      "find": "    if d2 < rdiff * rdiff:\n        # 内含（|r1-r2| > d，含同心已在上面处理）\n        return \"none\", (), True",
+      "replace": "    if False:\n        return \"none\", (), True",
+      "tests": ["tests/test_arc_arc_intersection.py::test_containment"],
+      "description": "跳过内含守卫：内含被误交给根轴求交（math.sqrt 收到负数抛 ValueError）"
     }
   ]
 }

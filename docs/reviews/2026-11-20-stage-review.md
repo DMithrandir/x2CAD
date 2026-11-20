@@ -103,8 +103,16 @@ Exact Constructions 全程持有精确代数数，绝不中途退回 `float`。
   8 条 conformance、3 个新变异（判别式分类、顺时针符号、端点根过滤）。
   首轮变异 `SEGMENT_ARC_ROOT_FILTER_BOUND` 存活——原测试的弦交点不在端点，
   补 `test_endpoint_root_is_kept` 后捕获。当前 272 例测试、55 conformance、18/18 变异。
-- [ ] **实现 Arc×Arc / Circle×Circle**：根轴法 + 同心/包含/相切分类（下一批）。
-- [ ] **A2/A3**：直线-Bézier、Bézier-Bézier 求交。
+- [x] **实现 Arc×Arc / Circle×Circle**（2026-11-20 追加）：`operators/arc_arc_intersection`，
+  根轴法 + 六分类（外离/外切/相交/内切/内含/同心重合），d² 与 (r1±r2)² 的比较全部
+  有理数精确；弧段过滤复用 #2 的公共函数 `arc_contains_dir`（原私有符号改公开，
+  spec `depends_on` 声明，SC005/SC006 通过）。17 例 oracle、10 条 conformance、
+  3 个新变异（外切分类、根轴因子 2、内含守卫）。变异审计发现原写的 h²<0
+  防御性守卫是**不可达死代码**（分类已在有理数上保证 h²≥0，跳过它无法被任何
+  测试捕获）——删除并注释推导；"跳过内含守卫"变异由 `test_containment`
+  的贴边内含用例捕获（守卫被跳过时 math.sqrt 收到负数抛 ValueError）。
+  当前 289 例测试、65 conformance、21/21 变异。
+- [ ] **A2/A3**：直线-Bézier、Bézier-Bézier 求交（解析通道完成后的下一批）。
 - [ ] **TNP 设计**：特征历史锚点 + 邻接签名（独立 ADR，不进 P1）。
 - [ ] **脏几何修复 / 3D 深水区**：保持 Non-Goal，不排期。
 
@@ -114,9 +122,9 @@ Exact Constructions 全程持有精确代数数，绝不中途退回 `float`。
 
 | 项 | 值 |
 |:--|:--|
-| oracle 测试 | 272 例全绿 |
-| conformance | 55/55 cases |
-| 变异自审 | 18/18 = 100% |
+| oracle 测试 | 289 例全绿 |
+| conformance | 65/65 cases |
+| 变异自审 | 21/21 = 100% |
 | 静态检查 | 0 findings |
 | 门禁 | `python -m verify` PASS |
 
