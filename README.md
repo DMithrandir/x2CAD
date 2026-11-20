@@ -75,7 +75,7 @@ AI 与 CAD 交叉领域的瓶颈，已经从**“能不能生成几何”**转�
 | **#1 (P0)** | **白盒验证台 + 预言机变异自审** | 算子未大规模入核前，必须先审计裁判本身；此时构建成本最低、后续复利最高 | 静态检查 0 findings；覆盖率 0 缺口；conformance 0 失败；变异捕获率 **24/24 = 100%** | **Done**（2026-11-09） |
 | **#2** | **`EntityRef` 契约**<br>（指针引用 + 重编号 + 谱系） | 一旦布尔运算动工，无契约的引用机制必将全盘返工 | 同一脚本重放两遍 id 序列严格一致；Tombstone 引用 100% 报错；1-to-N / N-to-1 谱系可解析 | **Done**（2026-11-16，v0.2） |
 | **#4 (N2)** | **节点操作与曲线微分几何**<br>（Boehm、升阶、分裂、弧长/切矢/曲率、2D 圆角） | 纯数学叶子分支收口，为参数域求交打断提供无损几何操作 | 四路 Oracle 全部通过；节点插入几何误差 < 1e-12（测试钉住） | **Done**（2026-11-09） |
-| **#3 (P1)** | **二维完整垂直切片**<br>（2D 约束求解 + 2D 曲线布尔） | 二维是唯一能由个人将“所有算子与拓扑装配都做对”的完整闭环（参考 [SolveSpace](https://solvespace.com/) / [arXiv:1006.1126](https://arxiv.org/abs/1006.1126)） | 约束残差 < 1e-10；多边形层与 [Shapely](https://shapely.readthedocs.io/) 对拍一致，曲线层通过合成解析解对拍 | **In Progress**（P1-A1 线段求交已落地；A2/A3 进行中） |
+| **#3 (P1)** | **二维完整垂直切片**<br>（2D 约束求解 + 2D 曲线布尔） | 二维是唯一能由个人将“所有算子与拓扑装配都做对”的完整闭环（参考 [SolveSpace](https://solvespace.com/) / [arXiv:1006.1126](https://arxiv.org/abs/1006.1126)） | 约束残差 < 1e-10 且分支不翻转；多边形层与 [Shapely](https://shapely.readthedocs.io/) 对拍一致，曲线层通过合成解析解对拍 | **In Progress**：解析闭式通道（#1–#3）与 A2 线段-Bézier 已落地，A3 / 约束求解 / 布尔装配待做。可视化版：[roadmap.html](docs/roadmap.html) |
 | **#5** | **曲线求交 (CCI) → 曲面求交 (SSI)** | 从“纯数学叶子算法”跨入“三维拓扑连通判定”（参见 [arXiv:2604.12631](https://arxiv.org/abs/2604.12631)）的终极门槛 | `区间隔离 → Bézier Clipping/区间牛顿 → Boehm 插入 → 区间分类 → 装配` 全链路白盒对拍通过 | **Future** |
 
 > **关键架构纪律（ADR-0001 / ADR-0002）**：AI 只直接成文**纯数学叶子算法 + 可静态验证的脚手架**；B-Rep 拓扑变异必须规格先行、分步小实现、人工审查，或封装参考实现。二维曲线布尔与求交链上的每一步（区间隔离、求根、Boehm 节点插入、区间内外分类、半边装配）必须拆解为**无状态、可独立对拍的纯数学叶子函数（Leaf Algorithms）**。
@@ -87,11 +87,14 @@ AI 与 CAD 交叉领域的瓶颈，已经从**“能不能生成几何”**转�
 ```text
 x2cad/
 ├── docs/
-│   ├── adr/                       # 决策记录：0001 范围纪律 / 0002 P0 验证台 / 0003 EntityRef 谱系
+│   ├── adr/                       # 决策记录：0001 范围纪律 / 0002 P0 验证台 / 0003 EntityRef 谱系 / 0004 确定性 ≠ TNP
+│   ├── reviews/                   # 阶段 review：价值判断、工业界代差、修复执行单
 │   ├── plans/                     # 母设计文档 + Pointer-CAD 参考文档
-│   ├── specs/                     # 契约规范：算子 conformance、EntityRef 契约
+│   ├── specs/                     # 契约规范：算子 conformance、EntityRef 契约、解析图元、约束求解器
+│   ├── roadmap.html               # 可视化路线图（单文件 HTML，浏览器直接打开）
 │   └── learning/                  # 学习路线与练习
-├── primitives/                    # 数值基元：B 样条基、精确谓词、容差上下文、Gauss 求积
+├── primitives/                    # 数值基元：B 样条基、精确谓词、容差上下文、Gauss 求积、
+│                                  #   polynomial（精确多项式机械：Bernstein↔幂基 / gcd / 无平方分解 / Sturm 隔离）
 ├── operators/                     # 算子库（每算子 = impl.py + spec.json + oracle 测试 + conformance case）
 │   ├── curve_eval/                # B 样条 / NURBS 曲线求值与各阶导数
 │   ├── surface_eval/              # 张量积曲面求值、偏导
@@ -191,7 +194,9 @@ conformance：47/47 cases，47/47 checks，证据 verify/evidence/report.json
 
 ## 9. 文档索引（Where to Read More）
 
-* 决策记录：[ADR-0001](docs/adr/0001-nurbs-first.md)（范围纪律）、[ADR-0002](docs/adr/0002-p0-verification-and-ref-contract.md)（P0 验证台与算子契约）、[ADR-0003](docs/adr/0003-entity-derivation-lineage.md)（EntityRef 派生寻址）
+* 决策记录：[ADR-0001](docs/adr/0001-nurbs-first.md)（范围纪律）、[ADR-0002](docs/adr/0002-p0-verification-and-ref-contract.md)（P0 验证台与算子契约）、[ADR-0003](docs/adr/0003-entity-derivation-lineage.md)（EntityRef 派生寻址）、[ADR-0004](docs/adr/0004-determinism-vs-tnp.md)（确定性重放 ≠ TNP）
+* 阶段 review：[2026-11-20-stage-review.md](docs/reviews/2026-11-20-stage-review.md)（真实价值、七个工业界代差、追/不追决策）
+* 可视化路线图：[docs/roadmap.html](docs/roadmap.html)
 * 母设计文档：[docs/plans/2026-08-20-x2cad-kernel-design.md](docs/plans/2026-08-20-x2cad-kernel-design.md)
 * 契约规范：[算子 conformance 规范](docs/specs/cad-operator-conformance.md)、[EntityRef 契约 v0.2](docs/specs/entity-ref-contract.md)
 * 协作入口：[CLAUDE.md](CLAUDE.md)
